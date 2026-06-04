@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
@@ -19,24 +18,6 @@ app.use(express.static(path.join(__dirname, '/')));
 
 // Configure Multer for memory storage (for attaching directly to emails)
 const upload = multer({ storage: multer.memoryStorage() });
-
-// Database setup
-const db = new sqlite3.Database('./database.sqlite', (err) => {
-    if (err) {
-        console.error('Error opening database', err.message);
-    } else {
-        console.log('Connected to the SQLite database.');
-        db.run(`CREATE TABLE IF NOT EXISTS submissions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            phone TEXT NOT NULL,
-            vehicle TEXT,
-            message TEXT,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`);
-    }
-});
 
 // Setup Nodemailer transporter
 const transporter = nodemailer.createTransport({
