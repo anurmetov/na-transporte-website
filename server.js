@@ -15,6 +15,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '/')));
+app.use(
+  "/assets",
+  express.static(path.join(__dirname, "react-wizard/dist/assets"))
+);
 
 // Configure Multer for memory storage (for attaching directly to emails)
 const upload = multer({ storage: multer.memoryStorage() });
