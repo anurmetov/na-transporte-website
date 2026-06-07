@@ -223,13 +223,7 @@ app.get('/admin', basicAuth, (req, res) => {
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-app.get('/debug-files', (req, res) => {
-  const files = fs.readdirSync(__dirname);
-  res.json({
-    dirname: __dirname,
-    files
-  });
-});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
