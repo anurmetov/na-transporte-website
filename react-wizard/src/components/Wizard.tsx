@@ -11,8 +11,25 @@ import { StepSummary } from './steps/StepSummary';
 import { StepSuccess } from './steps/StepSuccess';
 import { ArrowLeft } from 'lucide-react';
 
+import React, { useEffect, useRef } from 'react';
+
 export const Wizard: React.FC = () => {
   const { step, prevStep, data } = useFormStore();
+  const isFirstMount = useRef(true);
+
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    const wizardEl = document.getElementById('react-wizard-root');
+    if (wizardEl) {
+      setTimeout(() => {
+        const y = wizardEl.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }, 50);
+    }
+  }, [step]);
 
   const renderStep = () => {
     if (step === 1) return <StepVehicleType />;

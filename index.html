@@ -1243,11 +1243,18 @@
                         // Mobile sticky CTA logic
                         const stickyCta = document.getElementById('mobile-sticky-cta');
                         const processSection = document.getElementById('process');
-                        if (stickyCta && processSection) {
+                        const wizardSection = document.getElementById('wertermittlung-section');
+                        if (stickyCta && processSection && wizardSection) {
                                 window.addEventListener('scroll', () => {
-                                        const rect = processSection.getBoundingClientRect();
+                                        const processRect = processSection.getBoundingClientRect();
+                                        const wizardRect = wizardSection.getBoundingClientRect();
+                                        
                                         // Show when scrolling into process section or below
-                                        if (rect.top <= window.innerHeight / 2) {
+                                        const isPastHero = processRect.top <= window.innerHeight / 2;
+                                        // Hide when wizard is mostly visible
+                                        const isWizardVisible = wizardRect.top <= window.innerHeight * 0.8 && wizardRect.bottom >= window.innerHeight * 0.2;
+                                        
+                                        if (isPastHero && !isWizardVisible) {
                                                 stickyCta.classList.remove('translate-y-[150%]', 'opacity-0');
                                         } else {
                                                 stickyCta.classList.add('translate-y-[150%]', 'opacity-0');

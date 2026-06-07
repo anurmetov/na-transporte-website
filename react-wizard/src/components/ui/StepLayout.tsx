@@ -9,17 +9,7 @@ interface StepLayoutProps {
 
 export const StepLayout: React.FC<StepLayoutProps> = ({ title, subtitle, children }) => {
   useEffect(() => {
-    // Scroll to the top of the wizard container when a new step renders
-    const wizardEl = document.getElementById('react-wizard-root');
-    if (wizardEl) {
-      // Small timeout to allow DOM to settle after framer-motion swap
-      setTimeout(() => {
-        const y = wizardEl.getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-      }, 50);
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Scroll logic moved to Wizard.tsx to prevent scrolling on initial page load
   }, []);
 
   return (
