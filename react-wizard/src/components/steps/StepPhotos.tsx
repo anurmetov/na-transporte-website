@@ -24,10 +24,12 @@ export const StepPhotos: React.FC = () => {
 
   return (
     <StepLayout title="Fotos hinzufügen (Optional)" subtitle="Laden Sie bis zu 5 Fotos Ihres Fahrzeugs hoch, um eine genauere Bewertung zu erhalten.">
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className="max-w-3xl mx-auto space-y-10 px-2">
         
         <div 
-          className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all ${dragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary/50 bg-white'}`}
+          className={`group relative overflow-hidden border-2 border-dashed rounded-3xl p-10 md:p-14 text-center transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 cursor-pointer ${
+            dragActive ? 'border-black bg-neutral-50 scale-[0.99]' : 'border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50 bg-white'
+          }`}
           onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
           onDragLeave={() => setDragActive(false)}
           onDrop={(e) => {
@@ -35,6 +37,16 @@ export const StepPhotos: React.FC = () => {
             setDragActive(false);
             handleFiles(e.dataTransfer.files);
           }}
+          onClick={() => fileInputRef.current?.click()}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
+          role="button"
+          aria-label="Fotos hochladen per Klick oder Drag and Drop"
         >
           <input 
             type="file" 
@@ -43,56 +55,59 @@ export const StepPhotos: React.FC = () => {
             className="hidden" 
             multiple 
             accept="image/*" 
+            tabIndex={-1}
           />
-          <div className="flex justify-center mb-4 text-gray-400">
-            <Camera className="w-16 h-16" />
+          <div className="flex justify-center mb-5 text-neutral-900 transition-transform duration-300 group-hover:-translate-y-1">
+            <div className="bg-neutral-100 p-4 rounded-full group-hover:bg-neutral-200 transition-colors">
+              <Camera className="w-8 h-8" />
+            </div>
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Fotos hier ablegen</h3>
-          <p className="text-gray-500 mb-6">oder auf den Button klicken, um Dateien auszuwählen</p>
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-primary/10 text-primary px-6 py-3 rounded-xl font-bold hover:bg-primary/20 transition-colors flex items-center gap-2 mx-auto"
-          >
-            <Upload className="w-5 h-5" />
+          <h3 className="text-xl font-bold text-neutral-900 mb-2 tracking-tight">Fotos hier ablegen</h3>
+          <p className="text-neutral-500 mb-8 leading-relaxed">oder klicken, um Dateien auszuwählen</p>
+          <div className="inline-flex items-center gap-2 font-medium bg-white border border-neutral-200 text-neutral-900 px-6 py-3 rounded-full group-hover:border-neutral-300 group-hover:shadow-sm transition-all">
+            <Upload className="w-5 h-5 text-neutral-500" />
             Dateien auswählen
-          </button>
+          </div>
         </div>
 
         {data.photos.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             {data.photos.map((photo, i) => (
-              <div key={i} className="relative group aspect-square rounded-xl overflow-hidden border bg-gray-50 flex items-center justify-center">
+              <div key={i} className="relative group aspect-square rounded-2xl overflow-hidden border border-neutral-200 bg-neutral-50 flex items-center justify-center shadow-sm">
                 <img 
                   src={URL.createObjectURL(photo)} 
                   alt={`Upload ${i+1}`} 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <button 
-                  onClick={() => removePhoto(i)}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => { e.stopPropagation(); removePhoto(i); }}
+                  aria-label="Foto entfernen"
+                  className="absolute top-2 right-2 bg-white text-neutral-900 rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 hover:bg-neutral-100 hover:text-red-500 transition-all outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-black"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ))}
             {data.photos.length < 5 && (
-              <div 
+              <button 
                 onClick={() => fileInputRef.current?.click()}
-                className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-primary hover:border-primary/50 cursor-pointer transition-colors"
+                className="aspect-square rounded-2xl border-2 border-dashed border-neutral-200 flex flex-col items-center justify-center text-neutral-400 hover:text-neutral-900 hover:border-neutral-400 hover:bg-neutral-50 cursor-pointer transition-all outline-none focus-visible:border-black focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+                aria-label="Weiteres Foto hinzufügen"
               >
-                <ImageIcon className="w-8 h-8 mb-2" />
-                <span className="text-sm font-bold">Hinzufügen</span>
-              </div>
+                <ImageIcon className="w-8 h-8 mb-3" />
+                <span className="text-sm font-semibold">Hinzufügen</span>
+              </button>
             )}
           </div>
         )}
 
-        <div className="pt-6 border-t flex justify-end">
+        <div className="pt-8 border-t border-neutral-100 flex justify-end">
           <button
             onClick={nextStep}
-            className="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-all shadow-md hover:shadow-lg"
+            className="group relative flex w-full md:w-auto items-center justify-center gap-3 overflow-hidden rounded-2xl bg-black px-8 py-4 font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
           >
-            {data.photos.length > 0 ? "Weiter" : "Überspringen & Weiter"}
+            <span>{data.photos.length > 0 ? "Weiter" : "Überspringen & Weiter"}</span>
+            <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
           </button>
         </div>
 

@@ -2,16 +2,19 @@ const generateEmailTemplate = (data) => {
     const {
         name,
         manufacturer,
-        model,
         vehicle_type,
         year,
-        first_registration,
+        mileage,
+        accident_full,
         tuev_available,
         tuev,
-        price
+        state_drive_full,
+        state_gear_full,
+        state_axle_full,
+        other_defects
     } = data;
 
-    const vehicleTitle = `${manufacturer || ''} ${model || ''}`.trim() || 'Fahrzeug';
+    const vehicleTitle = manufacturer !== '-' ? manufacturer : 'Fahrzeug';
 
     return `
 <!DOCTYPE html>
@@ -49,26 +52,53 @@ const generateEmailTemplate = (data) => {
                 
                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                        <td style="padding-bottom: 12px; width: 40%; color: #5f6366; font-size: 14px;">Marke / Modell:</td>
-                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${vehicleTitle} ${vehicle_type ? `(${vehicle_type})` : ''}</td>
+                        <td style="padding-bottom: 12px; width: 40%; color: #5f6366; font-size: 14px;">Typ:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${vehicle_type || '-'}</td>
+                    </tr>
+                    ${vehicle_type !== 'andere' && manufacturer !== '-' ? `
+                    <tr>
+                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Marke:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${manufacturer || '-'}</td>
                     </tr>
                     <tr>
                         <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Baujahr:</td>
                         <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${year || '-'}</td>
                     </tr>
                     <tr>
-                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Erstzulassung:</td>
-                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${first_registration || '-'}</td>
+                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Kilometer:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${mileage || '-'}</td>
                     </tr>
                     <tr>
-                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">TÜV/HU:</td>
-                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}</td>
+                        <td style="padding-bottom: 24px; color: #5f6366; font-size: 14px;">TÜV/HU:</td>
+                        <td style="padding-bottom: 24px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}</td>
                     </tr>
-                    ${price ? `
                     <tr>
-                        <td style="color: #5f6366; font-size: 14px;">Wunschpreis:</td>
-                        <td style="color: #1a1c1a; font-size: 14px; font-weight: 600;">${price} €</td>
+                        <td colspan="2" style="padding-bottom: 16px;">
+                            <h4 style="margin: 0; color: #ab3500; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Zustand</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Unfallfrei:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${accident_full || '-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Motor:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${state_drive_full || '-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Getriebe:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${state_gear_full || '-'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Achsen:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${state_axle_full || '-'}</td>
+                    </tr>
+                    ${other_defects ? `
+                    <tr>
+                        <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Mängel:</td>
+                        <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${other_defects}</td>
                     </tr>` : ''}
+                    ` : ''}
                 </table>
             </div>
 

@@ -48,24 +48,25 @@ export const StepData: React.FC = () => {
       <div className="space-y-10 max-w-3xl mx-auto text-left">
         
         {/* Erstzulassung */}
-        <div className="relative z-30">
-          <label className="block text-xl font-bold text-gray-900 mb-4">Jahr der Erstzulassung</label>
-          <div 
+        <div className="relative z-30 space-y-3">
+          <label className="block text-xl font-bold text-neutral-900 tracking-tight">Jahr der Erstzulassung</label>
+          <button 
+            type="button"
             onClick={() => setModalMode('year')}
-            className="w-full text-lg p-5 rounded-2xl border-2 border-gray-200 hover:border-primary/50 transition-all flex justify-between items-center cursor-pointer bg-white shadow-sm hover:shadow-md"
+            className="w-full text-left text-lg px-5 py-4 rounded-2xl border border-neutral-200 hover:border-neutral-300 bg-neutral-50 hover:bg-white transition-all flex justify-between items-center cursor-pointer shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:border-black focus-visible:bg-white"
           >
             <div className="flex items-center gap-3">
-              <Calendar className={`w-6 h-6 ${data.year ? 'text-primary' : 'text-gray-400'}`} />
-              <span className={data.year ? 'text-gray-900 font-bold' : 'text-gray-400'}>
+              <Calendar className={`w-5 h-5 ${data.year ? 'text-neutral-900' : 'text-neutral-400'}`} />
+              <span className={data.year ? 'text-neutral-900 font-semibold' : 'text-neutral-500'}>
                 {data.year || 'Jahr auswählen...'}
               </span>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Kilometerstand */}
-        <div>
-          <label className="block text-xl font-bold text-gray-900 mb-4">Kilometerstand</label>
+        <div className="space-y-4">
+          <label className="block text-xl font-bold text-neutral-900 tracking-tight">Kilometerstand</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {mileageOptions.map(m => (
               <CardButton
@@ -80,8 +81,8 @@ export const StepData: React.FC = () => {
         </div>
 
         {/* TÜV/HU */}
-        <div className="relative z-20">
-          <label className="block text-xl font-bold text-gray-900 mb-4">TÜV/HU vorhanden?</label>
+        <div className="relative z-20 space-y-4">
+          <label className="block text-xl font-bold text-neutral-900 tracking-tight">TÜV/HU vorhanden?</label>
           <div className="grid grid-cols-2 gap-4 max-w-sm mb-4">
             <CardButton
               label="Ja"
@@ -99,24 +100,25 @@ export const StepData: React.FC = () => {
 
           {data.tuevAvailable === 'Ja' && (
             <div className="mt-4 animate-in fade-in slide-in-from-top-2">
-              <div 
+              <button 
+                type="button"
                 onClick={() => setModalMode('tuev')}
-                className="w-full text-lg p-5 rounded-2xl border-2 border-gray-200 hover:border-primary/50 transition-all flex justify-between items-center cursor-pointer bg-white shadow-sm hover:shadow-md max-w-sm"
+                className="w-full text-left text-lg px-5 py-4 rounded-2xl border border-neutral-200 hover:border-neutral-300 bg-neutral-50 hover:bg-white transition-all flex justify-between items-center cursor-pointer shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:border-black focus-visible:bg-white max-w-sm"
               >
                 <div className="flex items-center gap-3">
-                  <Calendar className={`w-6 h-6 ${data.tuevMonth && data.tuevYear ? 'text-primary' : 'text-gray-400'}`} />
-                  <span className={data.tuevMonth && data.tuevYear ? 'text-gray-900 font-bold' : 'text-gray-400'}>
+                  <Calendar className={`w-5 h-5 ${data.tuevMonth && data.tuevYear ? 'text-neutral-900' : 'text-neutral-400'}`} />
+                  <span className={data.tuevMonth && data.tuevYear ? 'text-neutral-900 font-semibold' : 'text-neutral-500'}>
                     {data.tuevMonth && data.tuevYear ? `${data.tuevMonth} / ${data.tuevYear}` : 'Datum auswählen...'}
                   </span>
                 </div>
-              </div>
+              </button>
             </div>
           )}
         </div>
 
         {/* Unfallfrei */}
-        <div>
-          <label className="block text-xl font-bold text-gray-900 mb-4">Unfallfrei?</label>
+        <div className="space-y-4">
+          <label className="block text-xl font-bold text-neutral-900 tracking-tight">Unfallfrei?</label>
           <div className="grid grid-cols-2 gap-4 max-w-sm">
             <CardButton
               label="Ja"
@@ -134,17 +136,19 @@ export const StepData: React.FC = () => {
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium">
+          <div className="bg-red-50 text-red-600 p-4 rounded-2xl border border-red-200 font-medium flex items-center gap-3 shadow-sm animate-in fade-in slide-in-from-top-2">
+            <span className="material-symbols-outlined text-[20px]">error</span>
             {error}
           </div>
         )}
 
-        <div className="pt-6 border-t flex justify-end">
+        <div className="pt-8 border-t border-neutral-100 flex justify-end">
           <button
             onClick={handleNext}
-            className="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-primary/90 transition-all shadow-md hover:shadow-lg"
+            className="group relative flex w-full md:w-auto items-center justify-center gap-2 overflow-hidden rounded-2xl bg-black px-8 py-4 font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900"
           >
-            Weiter
+            <span>Weiter</span>
+            <span className="material-symbols-outlined transition-transform group-hover:translate-x-1 group-disabled:translate-x-0 group-disabled:opacity-50">arrow_forward</span>
           </button>
         </div>
 

@@ -91,22 +91,27 @@ export const StepBrand: React.FC = () => {
       </div>
       
       {data.brand === 'Andere' && (
-        <form onSubmit={handleCustomSubmit} className="mt-8 max-w-md mx-auto animate-in fade-in slide-in-from-top-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Bitte Marke eingeben:</label>
-          <div className="flex gap-4">
+        <form onSubmit={handleCustomSubmit} className="mt-10 max-w-md mx-auto animate-in fade-in slide-in-from-top-4 w-full px-2">
+          <label htmlFor="customBrand" className="block text-sm font-semibold text-neutral-900 mb-3">
+            Bitte Marke eingeben <span className="text-neutral-400 font-normal">*</span>
+          </label>
+          <div className="flex flex-col sm:flex-row gap-4">
             <input
+              id="customBrand"
               type="text"
               required
               value={customBrand}
               onChange={(e) => setCustomBrand(e.target.value)}
-              className="flex-1 rounded-lg border-gray-300 shadow-sm focus:border-primary focus:ring-primary px-4 py-3"
+              className="flex-1 rounded-2xl border border-neutral-200 bg-neutral-50 px-5 py-4 text-base text-neutral-900 outline-none transition-all placeholder:text-neutral-400 hover:border-neutral-300 focus:bg-white focus:ring-2 focus:ring-black focus:border-black"
               placeholder="Fahrzeugmarke..."
             />
             <button
               type="submit"
-              className="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors"
+              disabled={!customBrand.trim()}
+              className="group relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-black px-8 py-4 font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900"
             >
-              Weiter
+              <span>Weiter</span>
+              <span className="material-symbols-outlined transition-transform group-hover:translate-x-1 group-disabled:translate-x-0 group-disabled:opacity-50">arrow_forward</span>
             </button>
           </div>
         </form>

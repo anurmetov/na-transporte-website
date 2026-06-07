@@ -88,43 +88,32 @@ app.post('/api/contact', upload.array('photos', 5), (req, res) => {
         messageText += `\nWeitere bekannte Mängel / Schäden:\n${other_defects}\n`;
     }
 
-    const sql = `INSERT INTO submissions (name, email, phone, vehicle, message) VALUES (?, ?, ?, ?, ?)`;
-    const params = [name, email, phone, vehicle, messageText];
+    // Send email notification asynchronously
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+        const mailOptions = {
+            from: process.env.SMTP_FROM || process.env.SMTP_USER,
+            to: process.env.SMTP_TO || process.env.SMTP_USER,
+            subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
+            text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`
+        };
 
-    db.run(sql, params, function (err) {
-        if (err) {
-            console.error('Error inserting into db', err.message);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-        
-        // Send email notification asynchronously
-        if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-            const mailOptions = {
-                from: process.env.SMTP_FROM || process.env.SMTP_USER,
-                to: process.env.SMTP_TO || process.env.SMTP_USER,
-                subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
-                text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`
-            };
-
-            // Process uploaded files for attachments
-            if (req.files && req.files.length > 0) {
-                mailOptions.attachments = req.files.map(file => ({
-                    filename: file.originalname,
-                    content: file.buffer
-                }));
-            }
-
-            transporter.sendMail(mailOptions, (mailErr, info) => {
-                if (mailErr) console.error('Error sending email:', mailErr);
-                else console.log('Email sent:', info.response);
-            });
+        // Process uploaded files for attachments
+        if (req.files && req.files.length > 0) {
+            mailOptions.attachments = req.files.map(file => ({
+                filename: file.originalname,
+                content: file.buffer
+            }));
         }
 
-        res.status(201).json({ 
-            success: true, 
-            message: 'Submission saved successfully',
-            id: this.lastID 
+        transporter.sendMail(mailOptions, (mailErr, info) => {
+            if (mailErr) console.error('Error sending email:', mailErr);
+            else console.log('Email sent:', info.response);
         });
+    }
+
+    res.status(201).json({ 
+        success: true, 
+        message: 'Submission sent successfully'
     });
 });
 
@@ -150,90 +139,74 @@ app.post('/api/lead', upload.array('photos', 5), (req, res) => {
 
     const vehicle = `${manufacturer || ''} ${model || ''} ${vehicle_type ? `(${vehicle_type})` : ''}`.trim();
     
-    let messageText = `Fahrzeugdaten:\n`;
+    let messageText = `FAHRZEUG:\n`;
     messageText += `- Typ: ${vehicle_type || '-'}\n`;
-    messageText += `- Hersteller: ${manufacturer || '-'}\n`;
-    messageText += `- Modell: ${model || '-'}\n`;
-    messageText += `- Baujahr: ${year || '-'}\n`;
-    messageText += `- Erstzulassung: ${first_registration || '-'}\n`;
-    messageText += `- Kilometerstand/Betriebsstunden: ${mileage || '-'}\n`;
-    messageText += `- Schaltung/Automatik: ${gear_full || '-'}\n`;
-    messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
-    messageText += `- Schadstoffklasse: ${emission_class || '-'}\n`;
-    messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
-    messageText += `- Wunschpreis: ${price ? price + ' €' : '-'}\n\n`;
-    
-    if (description) messageText += `\nBeschreibung: ${description}\n`;
-    if (other_defects) messageText += `\nMängel: ${other_defects}\n`;
-
-    // 2. Save Lead
-    const sql = `INSERT INTO submissions (name, email, phone, vehicle, message) VALUES (?, ?, ?, ?, ?)`;
-    const params = [name, email, phone, vehicle, messageText];
-
-    db.run(sql, params, function (err) {
-        if (err) {
-            console.error('Error inserting into db', err.message);
-            return res.status(500).json({ success: false, error: 'Internal server error' });
-        }
+    if (vehicle_type !== 'andere' && manufacturer !== '-') {
+        messageText += `- Marke: ${manufacturer || '-'}\n`;
+        messageText += `- Baujahr: ${year || '-'}\n`;
+        messageText += `- Kilometer: ${mileage || '-'}\n`;
+        messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
         
-        // 3. Send Email Confirmation Asynchronously
-        if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-            // Internal Notification
-            const internalMailOptions = {
-                from: process.env.SMTP_FROM || process.env.SMTP_USER,
-                to: process.env.SMTP_TO || process.env.SMTP_USER,
-                subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
-                text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`
-            };
+        messageText += `\nZUSTAND:\n`;
+        messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
+        messageText += `- Motor: ${state_drive_full || '-'}\n`;
+        messageText += `- Getriebe: ${state_gear_full || '-'}\n`;
+        messageText += `- Achsen: ${state_axle_full || '-'}\n`;
+        if (other_defects) {
+            messageText += `- Mängel: ${other_defects}\n`;
+        }
+    }
 
-            // Process uploaded files for attachments
-            if (req.files && req.files.length > 0) {
-                internalMailOptions.attachments = req.files.map(file => ({
-                    filename: file.originalname,
-                    content: file.buffer
-                }));
-            }
+    // 2. Send Email Confirmation Asynchronously
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+        // Internal Notification
+        const internalMailOptions = {
+            from: process.env.SMTP_FROM || process.env.SMTP_USER,
+            to: process.env.SMTP_TO || process.env.SMTP_USER,
+            subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
+            text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`
+        };
 
-            transporter.sendMail(internalMailOptions, (mailErr) => {
-                if (mailErr) console.error('Error sending internal notification:', mailErr);
-            });
-
-            // Customer Confirmation Email (Premium HTML)
-            const htmlContent = generateEmailTemplate(req.body);
-            
-            const customerMailOptions = {
-                from: `"N&A Transporte" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-                to: email,
-                subject: 'Ihre Anfrage bei N&A Transporte ist eingegangen',
-                html: htmlContent
-            };
-
-            transporter.sendMail(customerMailOptions, (mailErr, info) => {
-                if (mailErr) console.error('Error sending confirmation email to customer:', mailErr);
-                else console.log('Confirmation email sent to customer:', email, info.response);
-            });
-        } else {
-            console.warn('SMTP credentials not provided. Email not sent.');
+        // Process uploaded files for attachments
+        if (req.files && req.files.length > 0) {
+            internalMailOptions.attachments = req.files.map(file => ({
+                filename: file.originalname,
+                content: file.buffer
+            }));
         }
 
-        // 4. Instant Confirmation
-        res.status(201).json({ 
-            success: true, 
-            message: 'Ihre Anfrage wurde erfolgreich gesendet!',
-            id: this.lastID 
+        transporter.sendMail(internalMailOptions, (mailErr) => {
+            if (mailErr) console.error('Error sending internal notification:', mailErr);
         });
+
+        // Customer Confirmation Email (Premium HTML)
+        const htmlContent = generateEmailTemplate(req.body);
+        
+        const customerMailOptions = {
+            from: `"N&A Transporte" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+            to: email,
+            subject: 'Ihre Anfrage bei N&A Transporte ist eingegangen',
+            html: htmlContent
+        };
+
+        transporter.sendMail(customerMailOptions, (mailErr, info) => {
+            if (mailErr) console.error('Error sending confirmation email to customer:', mailErr);
+            else console.log('Confirmation email sent to customer:', email, info.response);
+        });
+    } else {
+        console.warn('SMTP credentials not provided. Email not sent.');
+    }
+
+    // 3. Instant Confirmation
+    res.status(201).json({ 
+        success: true, 
+        message: 'Ihre Anfrage wurde erfolgreich gesendet!'
     });
 });
 
 
 app.get('/api/submissions', basicAuth, (req, res) => {
-    db.all(`SELECT * FROM submissions ORDER BY created_at DESC`, [], (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: err.message });
-            return;
-        }
-        res.json(rows);
-    });
+    res.json([]);
 });
 
 app.get('/admin', basicAuth, (req, res) => {

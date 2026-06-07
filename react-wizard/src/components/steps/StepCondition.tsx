@@ -17,7 +17,7 @@ export const StepCondition: React.FC = () => {
         
         {/* Motor */}
         <div>
-          <label className="block text-xl font-bold text-gray-900 mb-4">Motor / Antrieb</label>
+          <label className="block text-xl font-medium text-neutral-900 mb-4">Motor / Antrieb</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {conditionOptions.map(opt => (
               <CardButton
@@ -33,7 +33,7 @@ export const StepCondition: React.FC = () => {
 
         {/* Getriebe */}
         <div>
-          <label className="block text-xl font-bold text-gray-900 mb-4">Getriebe</label>
+          <label className="block text-xl font-medium text-neutral-900 mb-4">Getriebe</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {conditionOptions.map(opt => (
               <CardButton
@@ -49,7 +49,7 @@ export const StepCondition: React.FC = () => {
 
         {/* Achsen */}
         <div>
-          <label className="block text-xl font-bold text-gray-900 mb-4">Achsen</label>
+          <label className="block text-xl font-medium text-neutral-900 mb-4">Achsen</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {conditionOptions.map(opt => (
               <CardButton
@@ -64,25 +64,27 @@ export const StepCondition: React.FC = () => {
         </div>
 
         {/* Mängel */}
-        <div>
-          <label className="block text-xl font-bold text-gray-900 mb-4">Weitere bekannte Mängel/Schäden</label>
+        <div className="space-y-3">
+          <label htmlFor="maengel" className="block text-xl font-bold text-neutral-900 tracking-tight">Weitere bekannte Mängel/Schäden <span className="text-sm text-neutral-500 font-normal ml-2">(Optional)</span></label>
           <textarea
+            id="maengel"
             rows={3}
-            className="w-full rounded-xl border-2 border-gray-200 focus:border-primary focus:ring-0 p-4 text-lg bg-white"
-            placeholder="Beschreiben Sie hier eventuelle weitere Schäden (optional)"
+            className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 px-5 py-4 text-base text-neutral-900 outline-none transition-all placeholder:text-neutral-400 hover:border-neutral-300 focus:bg-white focus:ring-2 focus:ring-black focus:border-black"
+            placeholder="Beschreiben Sie hier eventuelle weitere Schäden..."
             value={c.maengel}
             onChange={(e) => updateCondition({ maengel: e.target.value })}
           />
         </div>
 
         {/* Action */}
-        <div className="pt-6 border-t flex justify-end">
+        <div className="pt-8 border-t border-neutral-100 flex justify-end">
           <button
             disabled={!isComplete}
             onClick={nextStep}
-            className="bg-primary text-white px-8 py-4 rounded-xl font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-all"
+            className="group relative flex w-full md:w-auto items-center justify-center gap-2 overflow-hidden rounded-2xl bg-black px-8 py-4 font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900"
           >
-            Weiter
+            <span>Weiter</span>
+            <span className="material-symbols-outlined transition-transform group-hover:translate-x-1 group-disabled:translate-x-0 group-disabled:opacity-50">arrow_forward</span>
           </button>
         </div>
 
