@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface DatePickerModalProps {
@@ -31,8 +32,24 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
     if (isOpen) {
       setSelectedMonth(initialMonth);
       setSelectedYear(initialYear);
+
+      // Auto-scroll to the selected year button inside the modal
+      setTimeout(() => {
+        const container = document.getElementById('datepicker-scroll-container');
+        if (initialYear) {
+          const btn = document.getElementById(`year-btn-${initialYear}`);
+          if (btn && container) {
+            btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        } else if (mode === 'year-only') {
+          // If no year selected, scroll to the top of the container
+          if (container) {
+            container.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      }, 150);
     }
-  }, [isOpen, initialMonth, initialYear]);
+  }, [isOpen, initialMonth, initialYear, mode]);
 
   if (!isOpen) return null;
 
@@ -52,8 +69,8 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
 
   const isValid = mode === 'month-year' ? (selectedMonth && selectedYear) : selectedYear;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+  const modalContent = (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
@@ -72,7 +89,7 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[60vh] overflow-y-auto">
+        <div id="datepicker-scroll-container" className="p-6 max-h-[60vh] overflow-y-auto">
           
           {mode === 'month-year' && (
             <div className="mb-8">
@@ -100,6 +117,7 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
               {yearOptions.map(y => (
                 <button
                   key={y}
+                  id={`year-btn-${y}`}
                   onClick={() => setSelectedYear(y)}
                   className={`py-2 text-base font-medium rounded-lg transition-all border
                     ${selectedYear === y 
@@ -134,4 +152,6 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
