@@ -2,6 +2,7 @@ import React from 'react';
 import { useFormStore } from '../../store/useFormStore';
 import { CardButton } from '../ui/CardButton';
 import { StepLayout } from '../ui/StepLayout';
+import { scrollToElement } from '../../utils/scroll';
 
 const conditionOptions = ['Top', 'OK', 'Mangelhaft', 'Defekt'];
 
@@ -16,7 +17,7 @@ export const StepCondition: React.FC = () => {
       <div className="space-y-10 max-w-3xl mx-auto text-left">
         
         {/* Motor */}
-        <div>
+        <div id="section-motor">
           <label className="block text-xl font-medium text-neutral-900 mb-4">Motor / Antrieb</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {conditionOptions.map(opt => (
@@ -24,7 +25,10 @@ export const StepCondition: React.FC = () => {
                 key={opt}
                 label={opt}
                 selected={c.motor === opt}
-                onClick={() => updateCondition({ motor: opt })}
+                onClick={() => {
+                  updateCondition({ motor: opt });
+                  scrollToElement('section-getriebe');
+                }}
                 className="py-3 px-2 text-sm"
               />
             ))}
@@ -32,7 +36,7 @@ export const StepCondition: React.FC = () => {
         </div>
 
         {/* Getriebe */}
-        <div>
+        <div id="section-getriebe">
           <label className="block text-xl font-medium text-neutral-900 mb-4">Getriebe</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {conditionOptions.map(opt => (
@@ -40,7 +44,10 @@ export const StepCondition: React.FC = () => {
                 key={opt}
                 label={opt}
                 selected={c.getriebe === opt}
-                onClick={() => updateCondition({ getriebe: opt })}
+                onClick={() => {
+                  updateCondition({ getriebe: opt });
+                  scrollToElement('section-achsen');
+                }}
                 className="py-3 px-2 text-sm"
               />
             ))}
@@ -48,7 +55,7 @@ export const StepCondition: React.FC = () => {
         </div>
 
         {/* Achsen */}
-        <div>
+        <div id="section-achsen">
           <label className="block text-xl font-medium text-neutral-900 mb-4">Achsen</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {conditionOptions.map(opt => (
@@ -56,7 +63,10 @@ export const StepCondition: React.FC = () => {
                 key={opt}
                 label={opt}
                 selected={c.achsen === opt}
-                onClick={() => updateCondition({ achsen: opt })}
+                onClick={() => {
+                  updateCondition({ achsen: opt });
+                  scrollToElement('section-maengel');
+                }}
                 className="py-3 px-2 text-sm"
               />
             ))}
@@ -64,7 +74,7 @@ export const StepCondition: React.FC = () => {
         </div>
 
         {/* Mängel */}
-        <div className="space-y-3">
+        <div id="section-maengel" className="space-y-3">
           <label htmlFor="maengel" className="block text-xl font-bold text-neutral-900 tracking-tight">Weitere bekannte Mängel/Schäden <span className="text-sm text-neutral-500 font-normal ml-2">(Optional)</span></label>
           <textarea
             id="maengel"
@@ -77,7 +87,7 @@ export const StepCondition: React.FC = () => {
         </div>
 
         {/* Action */}
-        <div className="pt-8 border-t border-neutral-100 flex justify-end">
+        <div id="section-next" className="pt-8 border-t border-neutral-100 flex justify-end">
           <button
             disabled={!isComplete}
             onClick={nextStep}

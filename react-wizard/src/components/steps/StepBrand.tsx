@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
 import { CardButton } from '../ui/CardButton';
 import { StepLayout } from '../ui/StepLayout';
+import { scrollToElement } from '../../utils/scroll';
 
 const carBrands = ['Volkswagen', 'BMW', 'Mercedes-Benz', 'Audi', 'Ford', 'Opel', 'Skoda', 'Porsche', 'Andere'];
 const truckBrands = ['Mercedes-Benz', 'MAN', 'Volvo', 'Scania', 'DAF', 'Iveco', 'Renault', 'Ford', 'Andere'];
@@ -50,6 +51,7 @@ export const StepBrand: React.FC = () => {
   const handleSelect = (brand: string) => {
     if (brand === 'Andere') {
       updateData({ brand: 'Andere' });
+      scrollToElement('customBrand-form');
     } else {
       updateData({ brand });
       setTimeout(() => nextStep(), 300);
@@ -91,7 +93,7 @@ export const StepBrand: React.FC = () => {
       </div>
       
       {data.brand === 'Andere' && (
-        <form onSubmit={handleCustomSubmit} className="mt-10 max-w-md mx-auto animate-in fade-in slide-in-from-top-4 w-full px-2">
+        <form id="customBrand-form" onSubmit={handleCustomSubmit} className="mt-10 max-w-md mx-auto animate-in fade-in slide-in-from-top-4 w-full px-2">
           <label htmlFor="customBrand" className="block text-sm font-semibold text-neutral-900 mb-3">
             Bitte Marke eingeben <span className="text-neutral-400 font-normal">*</span>
           </label>

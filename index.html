@@ -222,7 +222,7 @@
                                 </a>
                         </div>
                         <div class="hidden md:flex items-center gap-4">
-                                <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth' })"
+                                <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
                                         class="cursor-pointer transition-all active:scale-95 bg-neutral-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-black hover:shadow-md">
                                         Kontakt aufnehmen
                                 </button>
@@ -276,7 +276,7 @@
                                 </div>
                         </div>
 
-                        <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth' })"
+                        <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
                                 class="w-full sm:w-auto min-w-[300px] sm:min-w-[400px] bg-white text-black px-8 py-4 rounded-full font-semibold text-lg hover:bg-neutral-200 active:scale-[0.98] transition-all shadow-xl mb-6">
                                 Kostenlose Bewertung
                         </button>
@@ -350,7 +350,7 @@
         </section>
 
         <!-- Full-Width Form Section (Wizard) -->
-        <section class="pt-24 pb-0 bg-white" id="wertermittlung-section">
+        <section class="pt-24 pb-32 md:pb-64 bg-white min-h-[100vh]" id="wertermittlung-section">
                 <div class="max-w-5xl mx-auto px-6 md:px-12">
                         <div id="wertermittlung" class="scroll-mt-32">
                                 <div id="react-wizard-root" class="w-full text-left drop-shadow-sm"></div>
@@ -358,7 +358,7 @@
                 </div>
         </section>
         <!-- Benefits Section -->
-        <section class="pt-4 md:pt-6 pb-24 bg-white" id="benefits">
+        <section class="pt-16 md:pt-24 pb-24 bg-white" id="benefits">
                 <div class="max-w-7xl mx-auto px-6 md:px-12">
                         <div class="text-center mb-16">
                                 <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 tracking-tight">Warum N&amp;A
@@ -920,16 +920,15 @@
         </script>
 
         <!-- Custom Datepicker Template & Logic -->
-        <div id="datepicker-modal" class="fixed inset-0 z-[100] hidden pointer-events-none">
+        <div id="datepicker-modal" class="fixed inset-0 z-[100] hidden pointer-events-none items-center justify-center">
                 <!-- Backdrop -->
                 <div id="datepicker-backdrop"
-                        class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 pointer-events-auto md:hidden">
+                        class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 pointer-events-auto">
                 </div>
 
                 <!-- Dialog -->
                 <div id="datepicker-dialog"
-                        class="absolute w-full md:w-[340px] bg-surface rounded-t-2xl md:rounded-2xl shadow-xl transform translate-y-full md:translate-y-2 md:scale-95 opacity-0 transition-all duration-300 pointer-events-auto flex flex-col max-h-[80vh] md:max-h-[400px] overflow-hidden"
-                        style="bottom: 0; left: 0;">
+                        class="relative w-[90%] max-w-[340px] bg-surface rounded-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 pointer-events-auto flex flex-col max-h-[80vh] overflow-hidden z-[110]">
                         <!-- Header -->
                         <div
                                 class="px-5 py-4 border-b border-surface-variant flex justify-between items-center bg-surface shrink-0">
@@ -1044,36 +1043,7 @@
                         }
 
                         function positionDialog(trigger) {
-                                if (window.innerWidth < 768) {
-                                        dialog.style.position = 'fixed';
-                                        dialog.style.bottom = '0';
-                                        dialog.style.left = '0';
-                                        dialog.style.top = 'auto';
-                                        dialog.style.width = '100%';
-                                        dialog.classList.remove('md:translate-y-2', 'md:scale-95');
-                                } else {
-                                        const rect = trigger.getBoundingClientRect();
-                                        dialog.style.position = 'absolute';
-                                        dialog.style.bottom = 'auto';
-                                        dialog.style.width = '340px';
-
-                                        const spaceBelow = window.innerHeight - rect.bottom;
-                                        const dialogHeight = 400;
-
-                                        let topPos = rect.bottom + 8;
-                                        if (spaceBelow < dialogHeight && rect.top > dialogHeight) {
-                                                topPos = rect.top - dialogHeight - 8;
-                                        }
-
-                                        dialog.style.top = `${topPos}px`;
-
-                                        let leftPos = rect.left;
-                                        if (leftPos + 340 > window.innerWidth) {
-                                                leftPos = window.innerWidth - 350;
-                                        }
-                                        dialog.style.left = `${leftPos}px`;
-                                        dialog.classList.add('md:translate-y-2', 'md:scale-95');
-                                }
+                                // Dialog is now automatically centered via Flexbox on the parent container
                         }
 
                         function open(triggerContainer) {
@@ -1122,18 +1092,14 @@
 
                                 positionDialog(currentTrigger);
                                 modal.classList.remove('hidden');
+                                modal.classList.add('flex');
 
                                 requestAnimationFrame(() => {
                                         backdrop.classList.add('opacity-100');
                                         backdrop.classList.remove('opacity-0');
 
-                                        if (window.innerWidth < 768) {
-                                                dialog.classList.remove('translate-y-full', 'opacity-0');
-                                                dialog.classList.add('translate-y-0', 'opacity-100');
-                                        } else {
-                                                dialog.classList.remove('md:translate-y-2', 'md:scale-95', 'opacity-0');
-                                                dialog.classList.add('md:translate-y-0', 'md:scale-100', 'opacity-100');
-                                        }
+                                        dialog.classList.remove('scale-95', 'opacity-0');
+                                        dialog.classList.add('scale-100', 'opacity-100');
                                 });
 
                                 setTimeout(() => {
@@ -1147,17 +1113,14 @@
                                 backdrop.classList.remove('opacity-100');
                                 backdrop.classList.add('opacity-0');
 
-                                if (window.innerWidth < 768) {
-                                        dialog.classList.remove('translate-y-0', 'opacity-100');
-                                        dialog.classList.add('translate-y-full', 'opacity-0');
-                                } else {
-                                        dialog.classList.remove('md:translate-y-0', 'md:scale-100', 'opacity-100');
-                                        dialog.classList.add('md:translate-y-2', 'md:scale-95', 'opacity-0');
-                                }
+                                dialog.classList.remove('scale-100', 'opacity-100');
+                                dialog.classList.add('scale-95', 'opacity-0');
 
                                 setTimeout(() => {
+                                        modal.classList.remove('flex');
                                         modal.classList.add('hidden');
                                         currentTrigger = null;
+                                        format = null;
                                 }, 300);
                         }
 
@@ -1292,7 +1255,7 @@
         <!-- Mobile Sticky CTA -->
         <div id="mobile-sticky-cta"
                 class="md:hidden fixed bottom-4 left-4 right-4 z-[60] transition-all duration-300 translate-y-[150%] opacity-0">
-                <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth' })"
+                <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
                         class="w-full bg-primary-container text-on-primary py-4 px-6 rounded-xl font-label-bold text-label-bold shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform border border-outline-variant/20">
                         <span class="material-symbols-outlined text-[20px]">mail</span>
                         Kontakt aufnehmen
@@ -1333,7 +1296,7 @@
                         </a>
                 </div>
                 <div class="p-6 border-t border-neutral-100 bg-neutral-50/50">
-                        <button onclick="document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto'; document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth' })"
+                        <button onclick="document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto'; document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
                                 class="w-full bg-neutral-900 text-white py-3 rounded-full font-medium text-sm hover:bg-black transition-colors shadow-sm">
                                 Kontakt aufnehmen
                         </button>

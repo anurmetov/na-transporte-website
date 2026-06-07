@@ -4,6 +4,7 @@ import { useFormStore } from '../../store/useFormStore';
 import { CardButton } from '../ui/CardButton';
 import { StepLayout } from '../ui/StepLayout';
 import { DatePickerModal } from '../ui/DatePickerModal';
+import { scrollToElement } from '../../utils/scroll';
 
 const mileageOptions = [
   '0 - 50.000 km',
@@ -25,9 +26,10 @@ export const StepData: React.FC = () => {
   const [error, setError] = useState('');
   const [modalMode, setModalMode] = useState<'year' | 'tuev' | null>(null);
 
-  const handleUpdate = (updates: Partial<typeof data>) => {
+  const handleUpdate = (updates: Partial<typeof data>, nextId?: string, delay: number = 100) => {
     updateData(updates);
     setError(''); // clear error when user changes something
+    if (nextId) scrollToElement(nextId, delay);
   };
 
   const handleNext = () => {
@@ -48,7 +50,7 @@ export const StepData: React.FC = () => {
       <div className="space-y-10 max-w-3xl mx-auto text-left">
         
         {/* Erstzulassung */}
-        <div className="relative z-30 space-y-3">
+        <div id="section-year" className="relative z-30 space-y-3">
           <label className="block text-xl font-bold text-neutral-900 tracking-tight">Jahr der Erstzulassung</label>
           <button 
             type="button"
@@ -65,7 +67,7 @@ export const StepData: React.FC = () => {
         </div>
 
         {/* Kilometerstand */}
-        <div className="space-y-4">
+        <div id="section-mileage" className="space-y-4">
           <label className="block text-xl font-bold text-neutral-900 tracking-tight">Kilometerstand</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {mileageOptions.map(m => (
@@ -73,7 +75,7 @@ export const StepData: React.FC = () => {
                 key={m}
                 label={m}
                 selected={data.mileage === m}
-                onClick={() => handleUpdate({ mileage: m })}
+                onClick={() => handleUpdate({ mileage: m }, 'section-tuev')}
                 className="py-3 px-2 text-sm"
               />
             ))}
@@ -81,25 +83,25 @@ export const StepData: React.FC = () => {
         </div>
 
         {/* TÜV/HU */}
-        <div className="relative z-20 space-y-4">
+        <div id="section-tuev" className="relative z-20 space-y-4">
           <label className="block text-xl font-bold text-neutral-900 tracking-tight">TÜV/HU vorhanden?</label>
           <div className="grid grid-cols-2 gap-4 max-w-sm mb-4">
             <CardButton
               label="Ja"
               selected={data.tuevAvailable === 'Ja'}
-              onClick={() => handleUpdate({ tuevAvailable: 'Ja' })}
+              onClick={() => handleUpdate({ tuevAvailable: 'Ja' }, 'section-tuev-date')}
               className="py-3"
             />
             <CardButton
               label="Nein"
               selected={data.tuevAvailable === 'Nein'}
-              onClick={() => handleUpdate({ tuevAvailable: 'Nein', tuevMonth: '', tuevYear: '' })}
+              onClick={() => handleUpdate({ tuevAvailable: 'Nein', tuevMonth: '', tuevYear: '' }, 'section-unfallfrei')}
               className="py-3"
             />
           </div>
 
           {data.tuevAvailable === 'Ja' && (
-            <div className="mt-4 animate-in fade-in slide-in-from-top-2">
+            <div id="section-tuev-date" className="mt-4 animate-in fade-in slide-in-from-top-2">
               <button 
                 type="button"
                 onClick={() => setModalMode('tuev')}
@@ -117,19 +119,19 @@ export const StepData: React.FC = () => {
         </div>
 
         {/* Unfallfrei */}
-        <div className="space-y-4">
+        <div id="section-unfallfrei" className="space-y-4">
           <label className="block text-xl font-bold text-neutral-900 tracking-tight">Unfallfrei?</label>
           <div className="grid grid-cols-2 gap-4 max-w-sm">
             <CardButton
               label="Ja"
               selected={data.unfallfrei === 'Ja'}
-              onClick={() => handleUpdate({ unfallfrei: 'Ja' })}
+              onClick={() => handleUpdate({ unfallfrei: 'Ja' }, 'section-next')}
               className="py-3"
             />
             <CardButton
               label="Nein"
               selected={data.unfallfrei === 'Nein'}
-              onClick={() => handleUpdate({ unfallfrei: 'Nein' })}
+              onClick={() => handleUpdate({ unfallfrei: 'Nein' }, 'section-next')}
               className="py-3"
             />
           </div>
@@ -142,7 +144,7 @@ export const StepData: React.FC = () => {
           </div>
         )}
 
-        <div className="pt-8 border-t border-neutral-100 flex justify-end">
+        <div id="section-next" className="pt-8 border-t border-neutral-100 flex justify-end">
           <button
             onClick={handleNext}
             className="group relative flex w-full md:w-auto items-center justify-center gap-2 overflow-hidden rounded-2xl bg-black px-8 py-4 font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900"
@@ -161,7 +163,7 @@ export const StepData: React.FC = () => {
         yearOptions={allYears}
         initialYear={data.year}
         onClose={() => setModalMode(null)}
-        onSelect={(_, y) => handleUpdate({ year: y })}
+        onSelect={(_, y) => handleUpdate({ year: y }, 'section-mileage', 400)}
       />
 
       <DatePickerModal
@@ -172,7 +174,7 @@ export const StepData: React.FC = () => {
         initialMonth={data.tuevMonth}
         initialYear={data.tuevYear}
         onClose={() => setModalMode(null)}
-        onSelect={(m, y) => handleUpdate({ tuevMonth: m, tuevYear: y })}
+        onSelect={(m, y) => handleUpdate({ tuevMonth: m, tuevYear: y }, 'section-unfallfrei', 400)}
       />
 
     </StepLayout>
