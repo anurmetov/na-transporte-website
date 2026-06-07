@@ -19,6 +19,9 @@ app.use(
   "/assets",
   express.static(path.join(__dirname, "react-wizard/dist/assets"))
 );
+app.use(
+  express.static(path.join(__dirname, 'react-wizard/public'))
+);
 
 // Configure Multer for memory storage (for attaching directly to emails)
 const upload = multer({ storage: multer.memoryStorage() });
