@@ -8,6 +8,7 @@ export const StepSummary: React.FC = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const isTrailer = data.vehicleType === 'auflieger' || data.vehicleType === 'anhaenger';
+  const hideTuevAndAccident = isTrailer || data.vehicleType === 'lkw';
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -90,14 +91,18 @@ export const StepSummary: React.FC = () => {
                     <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_mileage_label')}</span>
                     <span className="font-medium text-neutral-900 break-words">{data.mileage}</span>
                   </li>
-                  <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
-                    <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_tuev')}</span> 
-                    <span className="font-medium text-neutral-900 break-words">{data.tuevAvailable === 'Ja' ? `${t('data_yes')} (${data.tuevMonth}/${data.tuevYear})` : t('data_no')}</span>
-                  </li>
-                  <li className="flex flex-col sm:flex-row gap-1 sm:gap-4">
-                    <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_accident')}</span>
-                    <span className="font-medium text-neutral-900 break-words">{data.unfallfrei === 'Ja' ? t('data_yes') : (data.unfallfrei === 'Nein' ? t('data_no') : data.unfallfrei)}</span>
-                  </li>
+                  {!hideTuevAndAccident && (
+                    <>
+                      <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
+                        <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_tuev')}</span> 
+                        <span className="font-medium text-neutral-900 break-words">{data.tuevAvailable === 'Ja' ? `${t('data_yes')} (${data.tuevMonth}/${data.tuevYear})` : t('data_no')}</span>
+                      </li>
+                      <li className="flex flex-col sm:flex-row gap-1 sm:gap-4">
+                        <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_accident')}</span>
+                        <span className="font-medium text-neutral-900 break-words">{data.unfallfrei === 'Ja' ? t('data_yes') : (data.unfallfrei === 'Nein' ? t('data_no') : data.unfallfrei)}</span>
+                      </li>
+                    </>
+                  )}
                 </>
               )}
             </>

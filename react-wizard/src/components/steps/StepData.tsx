@@ -185,6 +185,7 @@ export const StepData: React.FC = () => {
   };
 
   const isTrailer = data.vehicleType === 'auflieger' || data.vehicleType === 'anhaenger';
+  const hideTuevAndAccident = isTrailer || data.vehicleType === 'lkw';
 
   const handleNext = () => {
     if (needsModel && !data.model) return setError(t('err_model'));
@@ -192,6 +193,8 @@ export const StepData: React.FC = () => {
     if (!data.year) return setError(t('err_year'));
     if (!isTrailer) {
       if (!data.mileage) return setError(t('err_mileage'));
+    }
+    if (!hideTuevAndAccident) {
       if (!data.tuevAvailable) return setError(t('err_tuev'));
       if (data.tuevAvailable === 'Ja' && (!data.tuevMonth || !data.tuevYear)) {
         return setError(t('err_tuev_date'));
@@ -290,7 +293,7 @@ export const StepData: React.FC = () => {
         )}
 
         {/* TÜV/HU */}
-        {!isTrailer && (
+        {!hideTuevAndAccident && (
           <div id="section-tuev" className="relative z-20 space-y-4">
             <label className="block text-xl font-bold text-neutral-900 tracking-tight">{t('data_tuev')}</label>
             <div className="grid grid-cols-2 gap-4 max-w-sm mb-4">
@@ -328,7 +331,7 @@ export const StepData: React.FC = () => {
         )}
 
         {/* Unfallfrei */}
-        {!isTrailer && (
+        {!hideTuevAndAccident && (
           <div id="section-unfallfrei" className="space-y-4">
             <label className="block text-xl font-bold text-neutral-900 tracking-tight">{t('data_accident_free')}</label>
             <div className="grid grid-cols-2 gap-4 max-w-sm">
