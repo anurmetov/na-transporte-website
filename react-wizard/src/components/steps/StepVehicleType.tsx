@@ -1,20 +1,22 @@
 import React from 'react';
 import { useFormStore } from '../../store/useFormStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import { CardButton } from '../ui/CardButton';
 import { StepLayout } from '../ui/StepLayout';
 import { Car, Truck, TruckIcon, Combine, Settings } from 'lucide-react';
 
-const vehicleTypes = [
-  { id: 'pkw', label: 'PKW', icon: <Car /> },
-  { id: 'lkw', label: 'LKW', icon: <Truck /> },
-  { id: 'szm', label: 'SZM', icon: <TruckIcon /> },
-  { id: 'auflieger', label: 'Auflieger', icon: <Combine /> },
-  { id: 'anhaenger', label: 'Anhänger', icon: <Combine /> },
-  { id: 'andere', label: 'Andere', icon: <Settings /> },
-];
-
 export const StepVehicleType: React.FC = () => {
   const { data, updateData, nextStep } = useFormStore();
+  const { t } = useTranslation();
+
+  const vehicleTypes = [
+    { id: 'pkw', label: t('type_pkw'), icon: <Car /> },
+    { id: 'lkw', label: t('type_lkw'), icon: <Truck /> },
+    { id: 'szm', label: 'SZM', icon: <TruckIcon /> },
+    { id: 'auflieger', label: t('type_trailer'), icon: <Combine /> },
+    { id: 'anhaenger', label: 'Anhänger', icon: <Combine /> },
+    { id: 'andere', label: 'Andere', icon: <Settings /> },
+  ];
 
   const handleSelect = (id: string) => {
     updateData({ vehicleType: id });
@@ -27,8 +29,8 @@ export const StepVehicleType: React.FC = () => {
 
   return (
     <StepLayout 
-      title="Welches Fahrzeug möchten Sie verkaufen?" 
-      subtitle="Bitte wählen Sie den entsprechenden Fahrzeugtyp aus."
+      title={t('step_vehicle_type')} 
+      subtitle={t('step_vehicle_type_subtitle')}
     >
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
         {vehicleTypes.map((v) => (

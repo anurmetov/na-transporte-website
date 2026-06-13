@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useTranslation } from '../../hooks/useTranslation';
 
 interface DatePickerModalProps {
   isOpen: boolean;
@@ -23,8 +24,9 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
   initialMonth = '',
   initialYear = '',
   yearOptions,
-  title = "Datum wählen"
+  title
 }) => {
+  const { t } = useTranslation();
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [selectedYear, setSelectedYear] = useState(initialYear);
 
@@ -82,7 +84,7 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-neutral-100 bg-white">
-          <h2 className="text-xl font-semibold text-neutral-900">{title}</h2>
+          <h2 className="text-xl font-semibold text-neutral-900 break-words text-balance">{title || t('wizard_select_date')}</h2>
           <button onClick={onClose} className="p-2 text-neutral-400 hover:text-neutral-800 transition-colors rounded-lg hover:bg-neutral-100">
             <X className="w-5 h-5" />
           </button>
@@ -93,7 +95,7 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
           
           {mode === 'month-year' && (
             <div className="mb-8">
-              <h3 className="text-xs font-semibold text-neutral-500 tracking-wider uppercase mb-4">Monat</h3>
+              <h3 className="text-xs font-semibold text-neutral-500 tracking-wider uppercase mb-4">{t('wizard_month')}</h3>
               <div className="grid grid-cols-4 gap-2">
                 {monthsList.map(m => (
                   <button
@@ -112,7 +114,7 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
           )}
 
           <div>
-            <h3 className="text-xs font-semibold text-neutral-500 tracking-wider uppercase mb-4">Jahr</h3>
+            <h3 className="text-xs font-semibold text-neutral-500 tracking-wider uppercase mb-4">{t('wizard_year')}</h3>
             <div className="grid grid-cols-4 gap-2">
               {yearOptions.map(y => (
                 <button
@@ -138,14 +140,14 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = ({
             onClick={handleClear}
             className="text-neutral-500 font-medium hover:text-neutral-800 transition-colors px-4 py-2 rounded-lg hover:bg-neutral-100"
           >
-            Löschen
+            {t('wizard_clear')}
           </button>
           <button
             onClick={handleSelect}
             disabled={!isValid}
             className="bg-black text-white px-6 py-2.5 rounded-lg font-medium text-base disabled:opacity-50 hover:bg-neutral-800 transition-colors shadow-sm"
           >
-            Auswählen
+            {t('wizard_select')}
           </button>
         </div>
 

@@ -5,6 +5,7 @@ export interface FormState {
   lkwWeight: string; // "über 7.5T" or "unter 7.5T"
   otherType: string;
   brand: string;
+  model: string;
   year: string;
   mileage: string;
   unfallfrei: string;
@@ -39,6 +40,7 @@ const initialState: FormState = {
   lkwWeight: '',
   otherType: '',
   brand: '',
+  model: '',
   year: '',
   mileage: '',
   unfallfrei: '',
@@ -62,7 +64,13 @@ export const useFormStore = create<WizardStore>((set) => ({
   data: initialState,
   setStep: (step) => set({ step }),
   nextStep: () => set((state) => ({ step: state.step + 1 })),
-  prevStep: () => set((state) => ({ step: state.step > 1 ? state.step - 1 : 1 })),
+  prevStep: () => set((state) => {
+    const prev = state.step > 1 ? state.step - 1 : 1;
+    if (prev === 1) {
+      return { step: 1, data: initialState };
+    }
+    return { step: prev };
+  }),
   updateData: (partial) => set((state) => ({ data: { ...state.data, ...partial } })),
   updateCondition: (partial) => set((state) => ({ 
     data: { 

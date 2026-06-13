@@ -65,23 +65,22 @@ app.post('/api/contact', upload.array('photos', 5), (req, res) => {
 
     const vehicle = `${manufacturer || ''} ${model || ''} ${vehicle_type ? `(${vehicle_type})` : ''}`.trim();
     
+    const isTrailer = vehicle_type === 'auflieger' || vehicle_type === 'anhaenger';
+
     let messageText = `Fahrzeugdaten:\n`;
     messageText += `- Typ: ${vehicle_type || '-'}\n`;
     messageText += `- Hersteller: ${manufacturer || '-'}\n`;
     messageText += `- Modell: ${model || '-'}\n`;
     messageText += `- Baujahr: ${year || '-'}\n`;
     messageText += `- Erstzulassung: ${first_registration || '-'}\n`;
-    messageText += `- Kilometerstand/Betriebsstunden: ${mileage || '-'}\n`;
-    messageText += `- Schaltung/Automatik: ${gear_full || '-'}\n`;
-    messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
-    messageText += `- Schadstoffklasse: ${emission_class || '-'}\n`;
-    messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
+    if (!isTrailer) {
+        messageText += `- Kilometerstand/Betriebsstunden: ${mileage || '-'}\n`;
+        messageText += `- Schaltung/Automatik: ${gear_full || '-'}\n`;
+        messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
+        messageText += `- Schadstoffklasse: ${emission_class || '-'}\n`;
+        messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
+    }
     messageText += `- Wunschpreis: ${price ? price + ' €' : '-'}\n\n`;
-    
-    messageText += `Zustand:\n`;
-    messageText += `- Antrieb (Motor/Batterie): ${state_drive_full || '-'}\n`;
-    messageText += `- Getriebe: ${state_gear_full || '-'}\n`;
-    messageText += `- Achsen: ${state_axle_full || '-'}\n`;
     
     if (description) {
         messageText += `\nOptionale Beschreibung / Sonderausstattungen:\n${description}\n`;
@@ -141,22 +140,20 @@ app.post('/api/lead', upload.array('photos', 5), (req, res) => {
     }
 
     const vehicle = `${manufacturer || ''} ${model || ''} ${vehicle_type ? `(${vehicle_type})` : ''}`.trim();
+    const isTrailer = vehicle_type === 'auflieger' || vehicle_type === 'anhaenger';
     
     let messageText = `FAHRZEUG:\n`;
     messageText += `- Typ: ${vehicle_type || '-'}\n`;
     if (vehicle_type !== 'andere' && manufacturer !== '-') {
         messageText += `- Marke: ${manufacturer || '-'}\n`;
+        if (model && model !== '-') {
+            messageText += `- Modell: ${model}\n`;
+        }
         messageText += `- Baujahr: ${year || '-'}\n`;
-        messageText += `- Kilometer: ${mileage || '-'}\n`;
-        messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
-        
-        messageText += `\nZUSTAND:\n`;
-        messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
-        messageText += `- Motor: ${state_drive_full || '-'}\n`;
-        messageText += `- Getriebe: ${state_gear_full || '-'}\n`;
-        messageText += `- Achsen: ${state_axle_full || '-'}\n`;
-        if (other_defects) {
-            messageText += `- Mängel: ${other_defects}\n`;
+        if (!isTrailer) {
+            messageText += `- Kilometer: ${mileage || '-'}\n`;
+            messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
+            messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
         }
     }
 

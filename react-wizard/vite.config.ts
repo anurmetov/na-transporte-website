@@ -8,7 +8,12 @@ export default defineConfig({
       output: {
         entryFileNames: `assets/wizard.js`,
         chunkFileNames: `assets/wizard-chunk.js`,
-        assetFileNames: `assets/wizard.[ext]`
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+            return 'assets/wizard.[ext]';
+          }
+          return 'assets/[name]-[hash].[ext]';
+        }
       }
     }
   }

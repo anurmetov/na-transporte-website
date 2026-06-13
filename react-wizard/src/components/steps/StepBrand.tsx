@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import { CardButton } from '../ui/CardButton';
 import { StepLayout } from '../ui/StepLayout';
 import { scrollToElement } from '../../utils/scroll';
@@ -32,12 +33,13 @@ const brandDomains: Record<string, string> = {
 };
 
 const customLogos: Record<string, string> = {
-  'MAN': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/MAN_logo.svg/512px-MAN_logo.svg.png',
-  'Iveco': 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Iveco_Logo.svg/512px-Iveco_Logo.svg.png'
+  'MAN': '/react-wizard/public/man_logo.png',
+  'Iveco': '/react-wizard/public/iveco_logo.png'
 };
 
 export const StepBrand: React.FC = () => {
   const { data, updateData, nextStep } = useFormStore();
+  const { t } = useTranslation();
   
   let currentBrands = truckBrands;
   if (data.vehicleType === 'pkw') {
@@ -67,12 +69,12 @@ export const StepBrand: React.FC = () => {
   };
 
   return (
-    <StepLayout title="Welche Marke hat das Fahrzeug?">
+    <StepLayout title={t('step_brand_title')}>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {currentBrands.map((brand) => (
           <CardButton
             key={brand}
-            label={brand}
+            label={brand === 'Andere' ? t('brand_other') : brand}
             icon={brand !== 'Andere' && (customLogos[brand] || brandDomains[brand]) ? (
               <img 
                 src={customLogos[brand] || `https://logo.clearbit.com/${brandDomains[brand]}`} 
@@ -95,7 +97,7 @@ export const StepBrand: React.FC = () => {
       {data.brand === 'Andere' && (
         <form id="customBrand-form" onSubmit={handleCustomSubmit} className="mt-10 max-w-md mx-auto animate-in fade-in slide-in-from-top-4 w-full px-2">
           <label htmlFor="customBrand" className="block text-sm font-semibold text-neutral-900 mb-3">
-            Bitte Marke eingeben <span className="text-neutral-400 font-normal">*</span>
+            {t('brand_custom_label')} <span className="text-neutral-400 font-normal">*</span>
           </label>
           <div className="flex flex-col sm:flex-row gap-4">
             <input
@@ -105,14 +107,14 @@ export const StepBrand: React.FC = () => {
               value={customBrand}
               onChange={(e) => setCustomBrand(e.target.value)}
               className="flex-1 rounded-2xl border border-neutral-200 bg-neutral-50 px-5 py-4 text-base text-neutral-900 outline-none transition-all placeholder:text-neutral-400 hover:border-neutral-300 focus:bg-white focus:ring-2 focus:ring-black focus:border-black"
-              placeholder="Fahrzeugmarke..."
+              placeholder={t('brand_custom_placeholder')}
             />
             <button
               type="submit"
               disabled={!customBrand.trim()}
               className="group relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-black px-8 py-4 font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900"
             >
-              <span>Weiter</span>
+              <span>{t('wizard_next')}</span>
               <span className="material-symbols-outlined transition-transform group-hover:translate-x-1 group-disabled:translate-x-0 group-disabled:opacity-50">arrow_forward</span>
             </button>
           </div>

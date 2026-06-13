@@ -1,10 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import { StepLayout } from '../ui/StepLayout';
 import { Camera, Upload, X, Image as ImageIcon } from 'lucide-react';
 
 export const StepPhotos: React.FC = () => {
   const { data, updateData, nextStep } = useFormStore();
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
 
@@ -23,7 +25,7 @@ export const StepPhotos: React.FC = () => {
   };
 
   return (
-    <StepLayout title="Fotos hinzufügen (Optional)" subtitle="Laden Sie bis zu 5 Fotos Ihres Fahrzeugs hoch, um eine genauere Bewertung zu erhalten.">
+    <StepLayout title={t('photos_title')} subtitle={t('photos_subtitle')}>
       <div className="max-w-3xl mx-auto space-y-10 px-2">
         
         <div 
@@ -62,11 +64,11 @@ export const StepPhotos: React.FC = () => {
               <Camera className="w-8 h-8" />
             </div>
           </div>
-          <h3 className="text-xl font-bold text-neutral-900 mb-2 tracking-tight">Fotos hier ablegen</h3>
-          <p className="text-neutral-500 mb-8 leading-relaxed">oder klicken, um Dateien auszuwählen</p>
+          <h3 className="text-xl font-bold text-neutral-900 mb-2 tracking-tight">{t('photos_drag_drop')}</h3>
+          <p className="text-neutral-500 mb-8 leading-relaxed">{t('photos_or_click')}</p>
           <div className="inline-flex items-center gap-2 font-medium bg-white border border-neutral-200 text-neutral-900 px-6 py-3 rounded-full group-hover:border-neutral-300 group-hover:shadow-sm transition-all">
             <Upload className="w-5 h-5 text-neutral-500" />
-            Dateien auswählen
+            {t('photos_select')}
           </div>
         </div>
 
@@ -95,7 +97,7 @@ export const StepPhotos: React.FC = () => {
                 aria-label="Weiteres Foto hinzufügen"
               >
                 <ImageIcon className="w-8 h-8 mb-3" />
-                <span className="text-sm font-semibold">Hinzufügen</span>
+                <span className="text-sm font-semibold">{t('photos_add')}</span>
               </button>
             )}
           </div>
@@ -106,7 +108,7 @@ export const StepPhotos: React.FC = () => {
             onClick={nextStep}
             className="group relative flex w-full md:w-auto items-center justify-center gap-3 overflow-hidden rounded-2xl bg-black px-8 py-4 font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
           >
-            <span>{data.photos.length > 0 ? "Weiter" : "Überspringen & Weiter"}</span>
+            <span>{data.photos.length > 0 ? t('wizard_next') : t('wizard_skip')}</span>
             <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
           </button>
         </div>

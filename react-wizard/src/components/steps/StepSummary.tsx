@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import { StepLayout } from '../ui/StepLayout';
 
 export const StepSummary: React.FC = () => {
   const { data, nextStep } = useFormStore();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const isTrailer = data.vehicleType === 'auflieger' || data.vehicleType === 'anhaenger';
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -13,7 +16,7 @@ export const StepSummary: React.FC = () => {
     const payload = {
       vehicle_type: data.vehicleType === 'andere' ? data.otherType : (data.lkwWeight ? `${data.vehicleType} (${data.lkwWeight})` : data.vehicleType),
       manufacturer: data.brand || '-',
-      model: '-',
+      model: data.model || '-',
       year: data.year || '-',
       mileage: data.mileage || '-',
       accident_full: data.unfallfrei || '-',
@@ -49,53 +52,61 @@ export const StepSummary: React.FC = () => {
       
       nextStep(); // Go to success screen
     } catch (e) {
-      alert("Ein Fehler ist aufgetreten.");
+      alert(t('err_submit'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <StepLayout title="Zusammenfassung" subtitle="Bitte prüfen Sie Ihre Angaben.">
+    <StepLayout title={t('step_summary')} subtitle={t('step_summary_subtitle')}>
       <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 md:p-8 max-w-2xl mx-auto text-left">
         
-        <h3 className="font-semibold text-lg mb-4 border-b border-neutral-100 pb-2">Fahrzeug</h3>
-        <ul className="space-y-2 mb-6">
-          <li>
-            <span className="text-neutral-500 w-32 inline-block">Typ:</span> 
-            {data.vehicleType === 'andere' ? data.otherType : (data.lkwWeight ? `${data.vehicleType} (${data.lkwWeight})` : data.vehicleType)}
+        <h3 className="font-semibold text-lg mb-4 border-b border-neutral-100 pb-2">{t('summary_vehicle')}</h3>
+        <ul className="space-y-3 mb-6">
+          <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
+            <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_type')}</span> 
+            <span className="font-medium text-neutral-900 break-words">{data.vehicleType === 'andere' ? data.otherType : (data.lkwWeight ? `${data.vehicleType} (${data.lkwWeight})` : data.vehicleType)}</span>
           </li>
           {data.vehicleType !== 'andere' && (
             <>
-              <li><span className="text-neutral-500 w-32 inline-block">Marke:</span> {data.brand}</li>
-              <li><span className="text-neutral-500 w-32 inline-block">Baujahr:</span> {data.year}</li>
-              <li><span className="text-neutral-500 w-32 inline-block">Kilometer:</span> {data.mileage}</li>
-              <li>
-                <span className="text-neutral-500 w-32 inline-block">TÜV/HU:</span> 
-                {data.tuevAvailable === 'Ja' ? `Ja (${data.tuevMonth}/${data.tuevYear})` : 'Nein'}
+              <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
+                <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_brand_label')}</span>
+                <span className="font-medium text-neutral-900 break-words">{data.brand}</span>
               </li>
+              {['pkw', 'lkw', 'szm'].includes(data.vehicleType) && data.model && (
+                <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
+                  <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_model')}</span>
+                  <span className="font-medium text-neutral-900 break-words">{data.model.replace('(Alle)', `(${t('model_all')})`)}</span>
+                </li>
+              )}
+              <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
+                <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_year_label')}</span>
+                <span className="font-medium text-neutral-900 break-words">{data.year}</span>
+              </li>
+              {!isTrailer && (
+                <>
+                  <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
+                    <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_mileage_label')}</span>
+                    <span className="font-medium text-neutral-900 break-words">{data.mileage}</span>
+                  </li>
+                  <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
+                    <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_tuev')}</span> 
+                    <span className="font-medium text-neutral-900 break-words">{data.tuevAvailable === 'Ja' ? `${t('data_yes')} (${data.tuevMonth}/${data.tuevYear})` : t('data_no')}</span>
+                  </li>
+                  <li className="flex flex-col sm:flex-row gap-1 sm:gap-4">
+                    <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_accident')}</span>
+                    <span className="font-medium text-neutral-900 break-words">{data.unfallfrei === 'Ja' ? t('data_yes') : (data.unfallfrei === 'Nein' ? t('data_no') : data.unfallfrei)}</span>
+                  </li>
+                </>
+              )}
             </>
           )}
         </ul>
 
-        {data.vehicleType !== 'andere' && (
-          <>
-            <h3 className="font-semibold text-lg mb-4 border-b border-neutral-100 pb-2">Zustand</h3>
-            <ul className="space-y-2 mb-6">
-              <li><span className="text-neutral-500 w-32 inline-block">Unfallfrei:</span> {data.unfallfrei}</li>
-              <li><span className="text-neutral-500 w-32 inline-block">Motor:</span> {data.condition.motor}</li>
-              <li><span className="text-neutral-500 w-32 inline-block">Getriebe:</span> {data.condition.getriebe}</li>
-              <li><span className="text-neutral-500 w-32 inline-block">Achsen:</span> {data.condition.achsen}</li>
-              {data.condition.maengel && (
-                <li><span className="text-neutral-500 w-32 inline-block">Mängel:</span> {data.condition.maengel}</li>
-              )}
-            </ul>
-          </>
-        )}
-
         {data.photos && data.photos.length > 0 && (
           <>
-            <h3 className="font-semibold text-lg mb-4 border-b border-neutral-100 pb-2">Fotos ({data.photos.length})</h3>
+            <h3 className="font-semibold text-lg mb-4 border-b border-neutral-100 pb-2">{t('summary_photos_label')} ({data.photos.length})</h3>
             <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
               {data.photos.map((p, i) => (
                 <img key={i} src={URL.createObjectURL(p)} className="w-16 h-16 object-cover rounded-lg border border-neutral-200" alt={`Upload ${i}`} />
@@ -104,11 +115,11 @@ export const StepSummary: React.FC = () => {
           </>
         )}
 
-        <h3 className="font-semibold text-lg mb-4 border-b border-neutral-100 pb-2">Kontakt</h3>
+        <h3 className="font-semibold text-lg mb-4 border-b border-neutral-100 pb-2">{t('summary_contact_label')}</h3>
         <ul className="space-y-2 mb-8">
-          <li><span className="text-neutral-500 w-32 inline-block">Name:</span> {data.name}</li>
-          <li><span className="text-neutral-500 w-32 inline-block">Telefon:</span> {data.phone}</li>
-          <li><span className="text-neutral-500 w-32 inline-block">E-Mail:</span> {data.email}</li>
+          <li><span className="text-neutral-500 w-32 inline-block">{t('summary_name')}</span> {data.name}</li>
+          <li><span className="text-neutral-500 w-32 inline-block">{t('summary_phone')}</span> {data.phone}</li>
+          <li><span className="text-neutral-500 w-32 inline-block">{t('summary_email')}</span> {data.email}</li>
         </ul>
 
         <button
@@ -119,7 +130,7 @@ export const StepSummary: React.FC = () => {
           {loading ? (
             <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></span>
           ) : (
-            "Jetzt kostenfrei bewerten lassen"
+            t('wizard_submit_final')
           )}
         </button>
 

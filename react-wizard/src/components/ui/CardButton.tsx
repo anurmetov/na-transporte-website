@@ -26,7 +26,7 @@ export const CardButton: React.FC<CardButtonProps> = ({ selected, icon, label, c
       {...props}
     >
       {icon && <div className={cn("text-4xl transition-colors", selected ? "text-neutral-900" : "text-neutral-400")}>{icon}</div>}
-      <span className="font-medium text-lg text-center tracking-tight">{label}</span>
+      <span className="font-medium text-lg text-center tracking-tight break-words text-balance">{label}</span>
     </button>
   );
 };

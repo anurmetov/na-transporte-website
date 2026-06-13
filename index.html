@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="de" style="">
+<html class="light" lang="de" translate="no" style="">
 
 <head>
         <meta charset="utf-8">
@@ -8,6 +8,9 @@
         <meta name="description"
                 content="N&amp;A Transporte GmbH - Ihr zuverlässiger Partner für LKW-Ankauf und Nutzfahrzeuge in ganz Deutschland. Schnelle Bewertung, bestmögliche Preise und europaweite Abholung.">
         <link rel="canonical" href="https://na-transporte.de/">
+
+        <!-- Disable automatic browser translation -->
+        <meta name="google" content="notranslate">
 
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website">
@@ -192,43 +195,106 @@
                 .stagger-3 {
                         transition-delay: 300ms;
                 }
+
+                @keyframes ticker {
+                        0% {
+                                transform: translate3d(0, 0, 0);
+                        }
+
+                        100% {
+                                transform: translate3d(-50%, 0, 0);
+                        }
+                }
+
+                .animate-ticker {
+                        animation: ticker 40s linear infinite;
+                        display: flex;
+                        width: max-content;
+                }
+
+                /* Global Text Wrapping for Multi-language */
+                p,
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6,
+                a,
+                span,
+                button,
+                li {
+                        overflow-wrap: break-word;
+                        word-break: break-word;
+                        hyphens: auto;
+                }
+
+                h1,
+                h2,
+                h3,
+                h4,
+                h5,
+                h6 {
+                        text-wrap: balance;
+                }
         </style>
 </head>
 
-<body class="bg-background text-on-surface font-body-md overflow-x-hidden">
+<body class="bg-background text-on-surface font-body-md overflow-x-hidden" translate="no">
         <!-- TopNavBar -->
         <header
                 class="bg-white/80 backdrop-blur-md border-b border-neutral-200 shadow-sm fixed top-0 left-0 w-full z-50 transition-all duration-500">
-                <nav class="flex justify-between items-center px-6 md:px-12 py-5 w-full max-w-7xl mx-auto">
-                        <div class="flex items-center gap-4">
-                                <img alt="N&amp;A Transporte Logo" class="h-10 md:h-14 w-auto invert"
+                <nav class="flex justify-between items-center px-4 md:px-8 py-4 w-full max-w-7xl mx-auto gap-4">
+                        <div class="flex items-center shrink-0">
+                                <img alt="N&amp;A Transporte Logo" class="h-8 md:h-12 w-auto invert"
                                         src="./react-wizard/public/logo.png">
                         </div>
-                        <div class="hidden md:flex items-center gap-8">
-                                <a href="#process"
+                        <div class="hidden lg:flex items-center gap-4 xl:gap-8">
+                                <a href="#process" data-i18n="nav_process"
                                         onclick="event.preventDefault(); document.querySelector('#process').scrollIntoView({ behavior: 'smooth' });"
                                         class="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-200">
                                         Verlauf
                                 </a>
-                                <a href="#benefits"
+                                <a href="#benefits" data-i18n="nav_benefits"
                                         onclick="event.preventDefault(); document.querySelector('#benefits').scrollIntoView({ behavior: 'smooth' });"
                                         class="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-200">
                                         Vorteile
                                 </a>
-                                <a href="#reviews"
+                                <a href="#reviews" data-i18n="nav_reviews"
                                         onclick="event.preventDefault(); document.querySelector('#reviews').scrollIntoView({ behavior: 'smooth' });"
                                         class="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-200">
                                         Bewertungen
                                 </a>
                         </div>
-                        <div class="hidden md:flex items-center gap-4">
+                        <div class="hidden md:flex items-center gap-3 lg:gap-6">
+                                <!-- Language Switcher Desktop -->
+                                <div class="hidden md:flex items-center relative group z-50">
+                                        <button
+                                                class="flex items-center gap-1 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-200 px-2 py-1">
+                                                <span class="material-symbols-outlined text-[20px]">language</span>
+                                                <span class="current-lang-label uppercase tracking-wide">DE</span>
+                                                <span class="material-symbols-outlined text-[18px]">expand_more</span>
+                                        </button>
+                                        <div
+                                                class="absolute right-0 top-full mt-1 w-36 bg-white rounded-xl shadow-lg border border-neutral-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2">
+                                                <button onclick="changeLanguage('de')"
+                                                        class="text-left px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 font-medium">Deutsch</button>
+                                                <button onclick="changeLanguage('en')"
+                                                        class="text-left px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 font-medium">English</button>
+                                                <button onclick="changeLanguage('fr')"
+                                                        class="text-left px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 font-medium">Français</button>
+                                                <button onclick="changeLanguage('ru')"
+                                                        class="text-left px-4 py-2 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 font-medium">Русский</button>
+                                        </div>
+                                </div>
                                 <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
-                                        class="cursor-pointer transition-all active:scale-95 bg-neutral-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-black hover:shadow-md">
+                                        class="cursor-pointer transition-all active:scale-95 bg-neutral-900 text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-black hover:shadow-md"
+                                        data-i18n="nav_contact">
                                         Kontakt aufnehmen
                                 </button>
                         </div>
                         <!-- Mobile Hamburger Icon -->
-                        <button class="md:hidden p-2 text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors"
+                        <button class="lg:hidden p-2 text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors"
                                 onclick="document.getElementById('mobile-sidebar').classList.remove('translate-x-full'); document.getElementById('mobile-backdrop').classList.remove('hidden', 'opacity-0'); document.body.style.overflow='hidden'">
                                 <span class="material-symbols-outlined">menu</span>
                         </button>
@@ -236,7 +302,8 @@
         </header>
 
         <!-- Hero Section -->
-        <main class="relative min-h-screen md:min-h-[800px] flex items-center justify-center overflow-hidden py-24 bg-black">
+        <main
+                class="relative min-h-screen md:min-h-[800px] flex items-center justify-center overflow-hidden py-24 bg-black">
                 <div class="absolute inset-0 z-0">
                         <img alt="N&A Transporte Flotte" class="w-full h-full object-cover object-center grayscale"
                                 src="./react-wizard/public/bg.png">
@@ -244,7 +311,7 @@
                 </div>
                 <div
                         class="relative z-10 max-w-5xl mx-auto px-6 md:px-12 w-full flex flex-col items-center text-center mt-16 md:mt-40">
-                        <h1
+                        <h1 data-i18n="hero_title"
                                 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight text-white mb-12 md:mb-16">
                                 WIR KAUFEN IHRE<br />NUTZFAHRZEUGE
                         </h1>
@@ -253,44 +320,134 @@
                                 <div class="flex items-center gap-4">
                                         <span
                                                 class="material-symbols-outlined text-[28px] text-neutral-300">check_circle</span>
-                                        <span class="text-base sm:text-lg text-neutral-200 font-medium">Schnelle &
+                                        <span class="text-base sm:text-lg text-neutral-200 font-medium"
+                                                data-i18n="hero_subtitle_1">Schnelle &
                                                 kostenlose Fahrzeugbewertung</span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                         <span
                                                 class="material-symbols-outlined text-[28px] text-neutral-300">check_circle</span>
-                                        <span class="text-base sm:text-lg text-neutral-200 font-medium">Direkter Ankauf
+                                        <span class="text-base sm:text-lg text-neutral-200 font-medium"
+                                                data-i18n="hero_subtitle_2">Direkter Ankauf
                                                 ohne Zwischenhändler</span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                         <span
                                                 class="material-symbols-outlined text-[28px] text-neutral-300">check_circle</span>
-                                        <span class="text-base sm:text-lg text-neutral-200 font-medium">Persönliche
+                                        <span class="text-base sm:text-lg text-neutral-200 font-medium"
+                                                data-i18n="hero_subtitle_3">Persönliche
                                                 Betreuung</span>
                                 </div>
                                 <div class="flex items-center gap-4">
                                         <span
                                                 class="material-symbols-outlined text-[28px] text-neutral-300">check_circle</span>
-                                        <span class="text-base sm:text-lg text-neutral-200 font-medium">Unverbindliches
+                                        <span class="text-base sm:text-lg text-neutral-200 font-medium"
+                                                data-i18n="hero_subtitle_4">Unverbindliches
                                                 Angebot per E-Mail</span>
                                 </div>
                         </div>
 
                         <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
-                                class="w-full sm:w-auto min-w-[300px] sm:min-w-[400px] bg-white text-black px-8 py-4 rounded-full font-semibold text-lg hover:bg-neutral-200 active:scale-[0.98] transition-all shadow-xl mb-6">
+                                class="w-full sm:w-auto min-w-[300px] sm:min-w-[400px] bg-white text-black px-8 py-4 rounded-full font-semibold text-lg hover:bg-neutral-200 active:scale-[0.98] transition-all shadow-xl mb-6"
+                                data-i18n="hero_button">
                                 Kostenlose Bewertung
                         </button>
-                        <p class="text-sm text-neutral-400 max-w-md mx-auto text-center font-medium">
+                        <p class="text-sm text-neutral-400 max-w-md mx-auto text-center font-medium"
+                                data-i18n="hero_desc">
                                 Erhalten Sie in wenigen Minuten ein unverbindliches Angebot – einfach, schnell und ohne
                                 Verpflichtungen.
                         </p>
+                </div>
+
+                <!-- Ticker -->
+                <div
+                        class="w-full overflow-hidden border-y border-white/5 bg-black/40 backdrop-blur-md py-3 md:py-4 absolute bottom-0 left-0 z-20">
+                        <div class="animate-ticker flex w-max">
+                                <!-- Half 1 -->
+                                <div class="flex gap-8 md:gap-12 items-center px-4 md:px-6">
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_lkw">LKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_trailer">Trailer
+                                                & Auflieger</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pkw">PKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_payment">Sofortzahlung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pickup">Europaweite
+                                                Abholung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_lkw">LKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_trailer">Trailer
+                                                & Auflieger</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pkw">PKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_payment">Sofortzahlung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pickup">Europaweite
+                                                Abholung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                </div>
+                                <!-- Half 2 -->
+                                <div class="flex gap-8 md:gap-12 items-center px-4 md:px-6">
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_lkw">LKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_trailer">Trailer
+                                                & Auflieger</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pkw">PKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_payment">Sofortzahlung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pickup">Europaweite
+                                                Abholung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_lkw">LKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_trailer">Trailer
+                                                & Auflieger</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pkw">PKW-Ankauf</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_payment">Sofortzahlung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                        <span class="text-xs md:text-sm font-semibold tracking-[0.2em] text-neutral-400 uppercase whitespace-nowrap"
+                                                data-i18n="ticker_pickup">Europaweite
+                                                Abholung</span>
+                                        <span class="text-white text-[8px] md:text-[10px]">◆</span>
+                                </div>
+                        </div>
                 </div>
         </main>
 
         <!-- 3-Step Process -->
         <section class="py-24 bg-neutral-50 border-t border-neutral-200" id="process">
                 <div class="max-w-7xl mx-auto px-6 md:px-12">
-                        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 text-neutral-900 tracking-tight">In
+                        <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 text-neutral-900 tracking-tight"
+                                data-i18n="process_title">In
                                 3 Schritten zum Verkauf</h2>
                         <div class="relative">
                                 <!-- Connector Line -->
@@ -305,10 +462,11 @@
                                                         class="w-24 h-24 bg-white border border-neutral-200 rounded-full flex items-center justify-center text-black text-2xl font-bold shadow-sm mb-6 z-10 group-hover:scale-110 group-hover:border-neutral-400 group-hover:shadow-lg transition-all duration-500">
                                                         1
                                                 </div>
-                                                <h3
-                                                        class="text-xl font-semibold mb-4 text-neutral-900 min-h-[3.5rem] flex items-center justify-center text-center w-full">
+                                                <h3 data-i18n="process_step1_title"
+                                                        class="text-xl font-semibold mb-4 text-neutral-900 flex items-center justify-center text-center w-full">
                                                         Fahrzeugdaten übermitteln</h3>
-                                                <p class="text-neutral-500 leading-relaxed max-w-sm">
+                                                <p class="text-neutral-500 leading-relaxed max-w-sm"
+                                                        data-i18n="process_step1_desc">
                                                         Übermitteln Sie uns die Fahrzeugdaten sowie Ihre Kontaktdaten
                                                         durch unser Online-Formular, damit wir Sie schnell erreichen
                                                         können.
@@ -321,10 +479,11 @@
                                                         class="w-24 h-24 bg-white border border-neutral-200 rounded-full flex items-center justify-center text-black text-2xl font-bold shadow-sm mb-6 z-10 group-hover:scale-110 group-hover:border-neutral-400 group-hover:shadow-lg transition-all duration-500">
                                                         2
                                                 </div>
-                                                <h3
-                                                        class="text-xl font-semibold mb-4 text-neutral-900 min-h-[3.5rem] flex items-center justify-center text-center w-full">
+                                                <h3 data-i18n="process_step2_title"
+                                                        class="text-xl font-semibold mb-4 text-neutral-900 flex items-center justify-center text-center w-full">
                                                         Kostenlose Bewertung</h3>
-                                                <p class="text-neutral-500 leading-relaxed max-w-sm">
+                                                <p class="text-neutral-500 leading-relaxed max-w-sm"
+                                                        data-i18n="process_step2_desc">
                                                         Auf Grundlage Ihrer Angaben erstellen wir eine Einschätzung des
                                                         Fahrzeugwertes Ihres LKWs.
                                                 </p>
@@ -336,10 +495,11 @@
                                                         class="w-24 h-24 bg-white border border-neutral-200 rounded-full flex items-center justify-center text-black text-2xl font-bold shadow-sm mb-6 z-10 group-hover:scale-110 group-hover:border-neutral-400 group-hover:shadow-lg transition-all duration-500">
                                                         3
                                                 </div>
-                                                <h3
-                                                        class="text-xl font-semibold mb-4 text-neutral-900 min-h-[3.5rem] flex items-center justify-center text-center w-full">
+                                                <h3 data-i18n="process_step3_title"
+                                                        class="text-xl font-semibold mb-4 text-neutral-900 flex items-center justify-center text-center w-full">
                                                         Verkauf abschließen</h3>
-                                                <p class="text-neutral-500 leading-relaxed max-w-sm">
+                                                <p class="text-neutral-500 leading-relaxed max-w-sm"
+                                                        data-i18n="process_step3_desc">
                                                         Sie erhalten ein verbindliches Angebot und können dieses direkt
                                                         annehmen.
                                                 </p>
@@ -361,7 +521,8 @@
         <section class="pt-16 md:pt-24 pb-24 bg-white" id="benefits">
                 <div class="max-w-7xl mx-auto px-6 md:px-12">
                         <div class="text-center mb-16">
-                                <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 tracking-tight">Warum N&amp;A
+                                <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 tracking-tight"
+                                        data-i18n="benefits_title">Warum N&amp;A
                                         Transporte?</h2>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -372,8 +533,10 @@
                                                 class="w-16 h-16 bg-white border border-neutral-200 rounded-xl flex items-center justify-center text-neutral-900 group-hover:scale-110 transition-transform">
                                                 <span class="material-symbols-outlined text-[32px]">description</span>
                                         </div>
-                                        <h3 class="text-xl font-semibold text-neutral-900">Schnelle Bewertung</h3>
-                                        <p class="text-neutral-500 leading-relaxed">Erhalten Sie innerhalb 24 Stunden
+                                        <h3 class="text-xl font-semibold text-neutral-900" data-i18n="benefits_1_title">
+                                                Schnelle Bewertung</h3>
+                                        <p class="text-neutral-500 leading-relaxed" data-i18n="benefits_1_desc">Erhalten
+                                                Sie innerhalb 24 Stunden
                                                 eine erste Fahrzeugeinschätzung. Einfach Daten eingeben und Angebot
                                                 anfordern.</p>
                                 </div>
@@ -384,8 +547,10 @@
                                                 class="w-16 h-16 bg-white border border-neutral-200 rounded-xl flex items-center justify-center text-neutral-900 group-hover:scale-110 transition-transform">
                                                 <span class="material-symbols-outlined text-[32px]">payments</span>
                                         </div>
-                                        <h3 class="text-xl font-semibold text-neutral-900">Sofortige Bezahlung</h3>
-                                        <p class="text-neutral-500 leading-relaxed">Keine langen Wartezeiten auf Ihr
+                                        <h3 class="text-xl font-semibold text-neutral-900" data-i18n="benefits_2_title">
+                                                Sofortige Bezahlung</h3>
+                                        <p class="text-neutral-500 leading-relaxed" data-i18n="benefits_2_desc">Keine
+                                                langen Wartezeiten auf Ihr
                                                 Geld. Wir überweisen den vereinbarten Kaufpreis direkt nach dem
                                                 Kaufabschluss auf Ihr Konto.</p>
                                 </div>
@@ -396,8 +561,10 @@
                                                 class="w-16 h-16 bg-white border border-neutral-200 rounded-xl flex items-center justify-center text-neutral-900 group-hover:scale-110 transition-transform">
                                                 <span class="material-symbols-outlined text-[32px]">distance</span>
                                         </div>
-                                        <h3 class="text-xl font-semibold text-neutral-900">Europaweite Abholung</h3>
-                                        <p class="text-neutral-500 leading-relaxed">Egal wo Ihr Fahrzeug steht – wir
+                                        <h3 class="text-xl font-semibold text-neutral-900" data-i18n="benefits_3_title">
+                                                Europaweite Abholung</h3>
+                                        <p class="text-neutral-500 leading-relaxed" data-i18n="benefits_3_desc">Egal wo
+                                                Ihr Fahrzeug steht – wir
                                                 organisieren den Transport und holen Ihren LKW direkt vor Ort ab. Ohne
                                                 Mehrkosten.</p>
                                 </div>
@@ -414,59 +581,70 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2">
                                         <div
                                                 class="reveal p-10 md:p-16 border-b md:border-b-0 md:border-r border-neutral-200 space-y-8 bg-neutral-50/50">
-                                                <h3 class="text-2xl font-bold text-neutral-400">Ohne uns</h3>
+                                                <h3 class="text-2xl font-bold text-neutral-400"
+                                                        data-i18n="comp_without_title">Ohne uns</h3>
                                                 <ul class="space-y-6">
                                                         <li class="flex items-start gap-4 text-neutral-500">
                                                                 <span
                                                                         class="material-symbols-outlined text-neutral-300 mt-0.5">close</span>
-                                                                <span class="leading-relaxed">Wochenlange Inserate &amp;
+                                                                <span class="leading-relaxed flex-1"
+                                                                        data-i18n="comp_without_1">Wochenlange Inserate
+                                                                        &amp;
                                                                         Anrufe</span>
                                                         </li>
                                                         <li class="flex items-start gap-4 text-neutral-500">
                                                                 <span
                                                                         class="material-symbols-outlined text-neutral-300 mt-0.5">close</span>
-                                                                <span class="leading-relaxed">Mühsame
+                                                                <span class="leading-relaxed flex-1"
+                                                                        data-i18n="comp_without_2">Mühsame
                                                                         Preisverhandlungen</span>
                                                         </li>
                                                         <li class="flex items-start gap-4 text-neutral-500">
                                                                 <span
                                                                         class="material-symbols-outlined text-neutral-300 mt-0.5">close</span>
-                                                                <span class="leading-relaxed">Risiko durch
+                                                                <span class="leading-relaxed flex-1"
+                                                                        data-i18n="comp_without_3">Risiko durch
                                                                         Privatverkauf</span>
                                                         </li>
                                                         <li class="flex items-start gap-4 text-neutral-500">
                                                                 <span
                                                                         class="material-symbols-outlined text-neutral-300 mt-0.5">close</span>
-                                                                <span class="leading-relaxed">Keine Garantie auf
+                                                                <span class="leading-relaxed flex-1"
+                                                                        data-i18n="comp_without_4">Keine Garantie auf
                                                                         Bezahlung</span>
                                                         </li>
                                                 </ul>
                                         </div>
                                         <div class="reveal stagger-1 p-10 md:p-16 space-y-8">
-                                                <h3 class="text-2xl font-bold text-neutral-900">Mit uns</h3>
+                                                <h3 class="text-2xl font-bold text-neutral-900"
+                                                        data-i18n="comp_with_title">Mit uns</h3>
                                                 <ul class="space-y-6">
                                                         <li class="flex items-start gap-4 text-neutral-900">
                                                                 <span
                                                                         class="material-symbols-outlined text-black mt-0.5">check_circle</span>
-                                                                <span class="font-medium leading-relaxed">Kaufzusage
+                                                                <span class="font-medium leading-relaxed flex-1"
+                                                                        data-i18n="comp_with_1">Kaufzusage
                                                                         innerhalb von 24 Stunden</span>
                                                         </li>
                                                         <li class="flex items-start gap-4 text-neutral-900">
                                                                 <span
                                                                         class="material-symbols-outlined text-black mt-0.5">check_circle</span>
-                                                                <span class="font-medium leading-relaxed">Festpreis-Garantie
+                                                                <span class="font-medium leading-relaxed flex-1"
+                                                                        data-i18n="comp_with_2">Festpreis-Garantie
                                                                         ohne Nachverhandeln</span>
                                                         </li>
                                                         <li class="flex items-start gap-4 text-neutral-900">
                                                                 <span
                                                                         class="material-symbols-outlined text-black mt-0.5">check_circle</span>
-                                                                <span class="font-medium leading-relaxed">Rechtssicherer
+                                                                <span class="font-medium leading-relaxed flex-1"
+                                                                        data-i18n="comp_with_3">Rechtssicherer
                                                                         Kaufvertrag</span>
                                                         </li>
                                                         <li class="flex items-start gap-4 text-neutral-900">
                                                                 <span
                                                                         class="material-symbols-outlined text-black mt-0.5">check_circle</span>
-                                                                <span class="font-medium leading-relaxed">Sofortige
+                                                                <span class="font-medium leading-relaxed flex-1"
+                                                                        data-i18n="comp_with_4">Sofortige
                                                                         Barzahlung oder Überweisung</span>
                                                         </li>
                                                 </ul>
@@ -630,13 +808,13 @@
                                                 <img alt="N&amp;A Logo" class="h-10 md:h-12 w-auto invert max-w-full"
                                                         loading="lazy" src="./react-wizard/public/logo.png">
                                         </div>
-                                        <p class="text-sm text-neutral-500 leading-relaxed">
+                                        <p class="text-sm text-neutral-500 leading-relaxed" data-i18n="footer_desc">
                                                 Ihr Experte für den Ankauf von LKWs, Trailern und Baumaschinen in
                                                 Deutschland und Europa.
                                         </p>
                                 </div>
                                 <div>
-                                        <h4
+                                        <h4 data-i18n="footer_contact"
                                                 class="text-sm font-semibold text-neutral-900 mb-6 uppercase tracking-wider">
                                                 Kontakt</h4>
                                         <ul class="text-sm text-neutral-500 space-y-4">
@@ -648,24 +826,24 @@
                                                 <li class="flex items-start gap-3">
                                                         <span
                                                                 class="material-symbols-outlined text-[18px] mt-0.5 text-neutral-400">mail</span>
-                                                        <span>natransport@web.de</span>
+                                                        <span>contact@natransporte.de</span>
                                                 </li>
                                                 <li class="flex items-start gap-3">
                                                         <span
                                                                 class="material-symbols-outlined text-[18px] mt-0.5 text-neutral-400">location_on</span>
-                                                        <span>Senefeldstr. 5, 77933 Lahr<br />Deutschland</span>
+                                                        <span>Senefelderstr. 5, 77933 Lahr<br />Deutschland</span>
                                                 </li>
                                         </ul>
                                 </div>
                                 <div>
-                                        <h4
+                                        <h4 data-i18n="footer_links"
                                                 class="text-sm font-semibold text-neutral-900 mb-6 uppercase tracking-wider">
                                                 Links</h4>
                                         <ul class="text-sm text-neutral-500 space-y-4">
-                                                <li><a href="/impressum.html"
+                                                <li><a href="/impressum.html" data-i18n="footer_imprint"
                                                                 class="hover:text-neutral-900 transition-colors">Impressum</a>
                                                 </li>
-                                                <li><a href="/datenschutz.html"
+                                                <li><a href="/datenschutz.html" data-i18n="footer_privacy"
                                                                 class="hover:text-neutral-900 transition-colors">Datenschutz</a>
                                                 </li>
                                                 <li><a href="#valuation-form"
@@ -676,7 +854,7 @@
                         </div>
                         <div
                                 class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-neutral-200">
-                                <span class="text-sm text-neutral-400">© 2024 N&amp;A Transporte GmbH. Alle Rechte
+                                <span class="text-sm text-neutral-400">© 2012 N&amp;A Transporte GmbH. Alle Rechte
                                         vorbehalten.</span>
                                 <div class="flex gap-4 mt-6 md:mt-0">
                                         <a class="w-10 h-10 rounded-full flex items-center justify-center text-neutral-400 hover:bg-neutral-100 hover:text-neutral-900 transition-colors"
@@ -1211,12 +1389,12 @@
                                 window.addEventListener('scroll', () => {
                                         const processRect = processSection.getBoundingClientRect();
                                         const wizardRect = wizardSection.getBoundingClientRect();
-                                        
+
                                         // Show when scrolling into process section or below
                                         const isPastHero = processRect.top <= window.innerHeight / 2;
                                         // Hide when wizard is mostly visible
                                         const isWizardVisible = wizardRect.top <= window.innerHeight * 0.8 && wizardRect.bottom >= window.innerHeight * 0.2;
-                                        
+
                                         if (isPastHero && !isWizardVisible) {
                                                 stickyCta.classList.remove('translate-y-[150%]', 'opacity-0');
                                         } else {
@@ -1258,9 +1436,10 @@
                 <button onclick="document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
                         class="w-full bg-primary-container text-on-primary py-4 px-6 rounded-xl font-label-bold text-label-bold shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition-transform border border-outline-variant/20">
                         <span class="material-symbols-outlined text-[20px]">mail</span>
-                        Kontakt aufnehmen
+                        <span data-i18n="nav_contact">Kontakt aufnehmen</span>
                 </button>
         </div>
+
         <!-- React Wizard Script -->
         <script type="module" src="/react-wizard/dist/assets/wizard.js"></script>
         <!-- Mobile Sidebar -->
@@ -1272,24 +1451,44 @@
                 class="fixed top-0 right-0 h-full w-full max-w-[300px] bg-white z-[110] transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col border-l border-neutral-100">
                 <div
                         class="p-6 border-b border-neutral-100 flex justify-between items-center bg-white/80 backdrop-blur-md">
-                        <span class="font-semibold text-neutral-900">Menü</span>
+                        <span class="font-semibold text-neutral-900" data-i18n="menu_title">Menü</span>
                         <button onclick="document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto'"
                                 class="p-2 -mr-2 text-neutral-500 hover:bg-neutral-100 rounded-full transition-colors flex items-center justify-center">
                                 <span class="material-symbols-outlined">close</span>
                         </button>
                 </div>
                 <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
-                        <a href="#process"
+                        <!-- Language Switcher Mobile -->
+                        <div class="flex flex-col gap-3 pb-4 border-b border-neutral-100">
+                                <span class="text-xs font-semibold text-neutral-400 uppercase tracking-wider"
+                                        data-i18n="lang_title">Sprache / Language</span>
+                                <div class="grid grid-cols-2 gap-2">
+                                        <button id="lang-btn-de"
+                                                onclick="changeLanguage('de'); document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto';"
+                                                class="text-left px-4 py-3 rounded-lg bg-neutral-50 text-sm font-medium text-neutral-900 border border-neutral-200 hover:bg-neutral-100">Deutsch</button>
+                                        <button id="lang-btn-en"
+                                                onclick="changeLanguage('en'); document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto';"
+                                                class="text-left px-4 py-3 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 border border-transparent">English</button>
+                                        <button id="lang-btn-fr"
+                                                onclick="changeLanguage('fr'); document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto';"
+                                                class="text-left px-4 py-3 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 border border-transparent">Français</button>
+                                        <button id="lang-btn-ru"
+                                                onclick="changeLanguage('ru'); document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto';"
+                                                class="text-left px-4 py-3 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 border border-transparent">Русский</button>
+                                </div>
+                        </div>
+
+                        <a href="#process" data-i18n="nav_process"
                                 onclick="document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto'; document.querySelector('#process').scrollIntoView({ behavior: 'smooth' });"
                                 class="text-base font-medium text-neutral-600 hover:text-neutral-900 transition-colors">
                                 Verlauf
                         </a>
-                        <a href="#benefits"
+                        <a href="#benefits" data-i18n="nav_benefits"
                                 onclick="document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto'; document.querySelector('#benefits').scrollIntoView({ behavior: 'smooth' });"
                                 class="text-base font-medium text-neutral-600 hover:text-neutral-900 transition-colors">
                                 Vorteile
                         </a>
-                        <a href="#reviews"
+                        <a href="#reviews" data-i18n="nav_reviews"
                                 onclick="document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto'; document.querySelector('#reviews').scrollIntoView({ behavior: 'smooth' });"
                                 class="text-base font-medium text-neutral-600 hover:text-neutral-900 transition-colors">
                                 Bewertungen
@@ -1297,11 +1496,14 @@
                 </div>
                 <div class="p-6 border-t border-neutral-100 bg-neutral-50/50">
                         <button onclick="document.getElementById('mobile-sidebar').classList.add('translate-x-full'); document.getElementById('mobile-backdrop').classList.add('hidden', 'opacity-0'); document.body.style.overflow='auto'; document.getElementById('wertermittlung').scrollIntoView({ behavior: 'smooth', block: window.innerWidth < 768 ? 'center' : 'start' })"
-                                class="w-full bg-neutral-900 text-white py-3 rounded-full font-medium text-sm hover:bg-black transition-colors shadow-sm">
+                                class="w-full bg-neutral-900 text-white py-3 rounded-full font-medium text-sm hover:bg-black transition-colors shadow-sm"
+                                data-i18n="nav_contact">
                                 Kontakt aufnehmen
                         </button>
                 </div>
         </aside>
+
+        <script src="i18n.js"></script>
 </body>
 
 </html>

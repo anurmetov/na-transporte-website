@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useFormStore } from '../../store/useFormStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import { StepLayout } from '../ui/StepLayout';
 
 export const StepContact: React.FC = () => {
   const { data, updateData, nextStep } = useFormStore();
+  const { t } = useTranslation();
   const [touched, setTouched] = useState({ name: false, phone: false, email: false });
 
-  const isComplete = data.name.trim() && data.phone.trim() && data.email.trim();
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim());
+  const isComplete = data.name.trim() && data.phone.trim() && data.email.trim() && isEmailValid;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,13 +35,13 @@ export const StepContact: React.FC = () => {
 
   return (
     <StepLayout 
-      title="Ihre Kontaktdaten"
-      subtitle="Damit wir Ihnen ein Angebot senden können."
+      title={t('step_contact')}
+      subtitle={t('step_contact_subtitle2')}
     >
       <form onSubmit={handleSubmit} className="space-y-8 max-w-md mx-auto text-left w-full px-2" noValidate>
         <div className="space-y-2.5">
           <label htmlFor="name" className="block text-sm font-semibold text-neutral-900">
-            Name / Firma <span className="text-neutral-400 font-normal">*</span>
+            {t('contact_name_label')} <span className="text-neutral-400 font-normal">*</span>
           </label>
           <div className="relative">
             <input
@@ -51,7 +54,7 @@ export const StepContact: React.FC = () => {
               value={data.name}
               onChange={(e) => updateData({ name: e.target.value })}
               onBlur={() => handleBlur('name')}
-              placeholder="Max Mustermann"
+              placeholder={t('contact_name_placeholder')}
               aria-invalid={touched.name && !data.name.trim() ? "true" : "false"}
             />
             {touched.name && !data.name.trim() && (
@@ -62,7 +65,7 @@ export const StepContact: React.FC = () => {
 
         <div className="space-y-2.5">
           <label htmlFor="phone" className="block text-sm font-semibold text-neutral-900">
-            Telefonnummer <span className="text-neutral-400 font-normal">*</span>
+            {t('contact_phone_label')} <span className="text-neutral-400 font-normal">*</span>
           </label>
           <div className="relative">
             <input
@@ -86,7 +89,7 @@ export const StepContact: React.FC = () => {
 
         <div className="space-y-2.5">
           <label htmlFor="email" className="block text-sm font-semibold text-neutral-900">
-            E-Mail Adresse <span className="text-neutral-400 font-normal">*</span>
+            {t('contact_email_label')} <span className="text-neutral-400 font-normal">*</span>
           </label>
           <div className="relative">
             <input
@@ -94,18 +97,21 @@ export const StepContact: React.FC = () => {
               type="email"
               required
               className={`w-full rounded-2xl border bg-neutral-50 px-5 py-4 text-base text-neutral-900 outline-none transition-all placeholder:text-neutral-400 focus:bg-white focus:ring-2 focus:ring-black focus:border-black ${
-                touched.email && !data.email.trim() ? 'border-red-500 bg-red-50' : 'border-neutral-200 hover:border-neutral-300'
+                touched.email && (!data.email.trim() || !isEmailValid) ? 'border-red-500 bg-red-50' : 'border-neutral-200 hover:border-neutral-300'
               }`}
               value={data.email}
               onChange={(e) => updateData({ email: e.target.value })}
               onBlur={() => handleBlur('email')}
               placeholder="mail@beispiel.de"
-              aria-invalid={touched.email && !data.email.trim() ? "true" : "false"}
+              aria-invalid={touched.email && (!data.email.trim() || !isEmailValid) ? "true" : "false"}
             />
-            {touched.email && !data.email.trim() && (
+            {touched.email && (!data.email.trim() || !isEmailValid) && (
               <span className="absolute right-4 top-1/2 -translate-y-1/2 text-red-500 material-symbols-outlined text-[20px]">error</span>
             )}
           </div>
+          {touched.email && data.email.trim() && !isEmailValid && (
+            <p className="text-sm text-red-500 mt-1.5 ml-1">{t('validation_email')}</p>
+          )}
         </div>
 
         <div className="pt-8">
@@ -114,7 +120,7 @@ export const StepContact: React.FC = () => {
             disabled={!isComplete}
             className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-black px-8 py-4 text-lg font-semibold text-white shadow-md transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-400 disabled:shadow-none hover:bg-neutral-900"
           >
-            <span>Zusammenfassung anzeigen</span>
+            <span>{t('contact_submit')}</span>
             <span className="material-symbols-outlined transition-transform group-hover:translate-x-1 group-disabled:translate-x-0 group-disabled:opacity-50">arrow_forward</span>
           </button>
         </div>
