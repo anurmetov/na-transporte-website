@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Car } from 'lucide-react';
+import { Calendar, Car, Combine } from 'lucide-react';
 import { useFormStore } from '../../store/useFormStore';
 import { useTranslation } from '../../hooks/useTranslation';
 import { CardButton } from '../ui/CardButton';
@@ -9,11 +9,13 @@ import { ModelPickerModal } from '../ui/ModelPickerModal';
 import { scrollToElement } from '../../utils/scroll';
 
 const defaultMileageOptions = [
-  '0 - 50.000 km',
-  '50.000 - 100.000 km',
+  '0 - 100.000 km',
   '100.000 - 200.000 km',
-  '200.000 - 500.000 km',
-  'Über 500.000 km'
+  '200.000 - 300.000 km',
+  '300.000 - 400.000 km',
+  '400.000 - 500.000 km',
+  '500.000 - 600.000 km',
+  '600.000+ km'
 ];
 
 const pkwMileageOptions = [
@@ -24,10 +26,27 @@ const pkwMileageOptions = [
 ];
 
 const lkwMileageOptions = [
-  '0 - 50.000 km',
-  '50.000 - 100.000 km',
+  '0 - 100.000 km',
   '100.000 - 200.000 km',
-  '200.000 - 1.000.000 km'
+  '200.000 - 300.000 km',
+  '300.000 - 400.000 km',
+  '400.000 - 500.000 km',
+  '500.000 - 600.000 km',
+  'Über 600.000 km'
+];
+
+const trailerTypes: ModelGroup[] = [
+  {
+    group: 'Fahrzeugtyp',
+    options: [
+      'Autokran', 'Autotransporter', 'Fahrgestell', 'Getränke',
+      'Holztransporter', 'Kipper', 'Koffer', 'Kühlkoffer',
+      'Langmaterialtransporter', 'Lebensmitteltank', 'Plattform',
+      'Pritsche', 'Pritsche + Plane', 'Silo', 'Tankaufbau',
+      'Tiefkühl', 'Tieflader', 'Verkaufsaufbau', 'Viehtransporter',
+      'Walkingfloor', 'Wechselfahrgestell', 'Andere Auflieger'
+    ]
+  }
 ];
 
 export type ModelGroup = { group: string; options: string[] };
@@ -165,9 +184,9 @@ export const StepData: React.FC = () => {
   const tuevYears = Array.from(new Array(2029 - 2022 + 1), (_val, index) => String(2029 - index));
 
   const [error, setError] = useState('');
-  const [modalMode, setModalMode] = useState<'year' | 'tuev' | 'model' | null>(null);
+  const [modalMode, setModalMode] = useState<'year' | 'tuev' | 'model' | 'trailer-type' | null>(null);
   
-  const needsModel = ['pkw', 'lkw', 'szm'].includes(data.vehicleType);
+  const needsModel = ['pkw', 'lkw', 'szm', 'auflieger'].includes(data.vehicleType);
   const availableModelGroups = data.vehicleType === 'pkw' ? carModels[data.brand] : truckModels[data.brand];
 
   // Helper to check if a model exists in the groups
@@ -185,9 +204,10 @@ export const StepData: React.FC = () => {
   };
 
   const isTrailer = data.vehicleType === 'auflieger' || data.vehicleType === 'anhaenger';
-  const hideTuevAndAccident = isTrailer || data.vehicleType === 'lkw';
+  const hideTuevAndAccident = isTrailer || data.vehicleType === 'szm' || data.vehicleType === 'lkw';
 
   const handleNext = () => {
+    if (data.vehicleType === 'auflieger' && !data.trailerType) return setError(t('err_trailer_type'));
     if (needsModel && !data.model) return setError(t('err_model'));
     if (data.model === 'Andere' && !customModel.trim()) return setError(t('err_model_custom'));
     if (!data.year) return setError(t('err_year'));
@@ -213,6 +233,25 @@ export const StepData: React.FC = () => {
     <StepLayout title={t('step_data')}>
       <div className="space-y-10 max-w-3xl mx-auto text-left">
         
+        {/* Fahrzeugtyp (for Trailer) */}
+        {data.vehicleType === 'auflieger' && (
+          <div id="section-trailer-type" className="relative z-50 space-y-3">
+            <label className="block text-xl font-bold text-neutral-900 tracking-tight">{t('data_trailer_type')}</label>
+            <button 
+              type="button"
+              onClick={() => setModalMode('trailer-type')}
+              className="w-full text-left text-lg px-5 py-4 rounded-2xl border border-neutral-200 hover:border-neutral-300 bg-neutral-50 hover:bg-white transition-all flex justify-between items-center cursor-pointer shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:border-black focus-visible:bg-white"
+            >
+              <div className="flex items-center gap-3">
+                <Combine className={`w-5 h-5 ${data.trailerType ? 'text-neutral-900' : 'text-neutral-400'}`} />
+                <span className={data.trailerType ? 'text-neutral-900 font-semibold' : 'text-neutral-500'}>
+                  {data.trailerType || t('data_trailer_type_select')}
+                </span>
+              </div>
+            </button>
+          </div>
+        )}
+
         {/* Modell */}
         {needsModel && (
           <div id="section-model" className="relative z-40 space-y-3">
@@ -279,7 +318,7 @@ export const StepData: React.FC = () => {
           <div id="section-mileage" className="space-y-4">
             <label className="block text-xl font-bold text-neutral-900 tracking-tight">{t('data_mileage')}</label>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {(data.vehicleType === 'pkw' ? pkwMileageOptions : (data.vehicleType === 'lkw' ? lkwMileageOptions : defaultMileageOptions)).map(m => (
+              {(data.vehicleType === 'pkw' ? pkwMileageOptions : (data.vehicleType === 'lkw' || data.vehicleType === 'szm' ? lkwMileageOptions : defaultMileageOptions)).map(m => (
                 <CardButton
                   key={m}
                   label={m}
@@ -401,6 +440,17 @@ export const StepData: React.FC = () => {
           }}
           options={availableModelGroups}
           initialValue={data.model === customModel && data.model !== '' && !isModelInGroups(data.model, availableModelGroups) ? 'Andere' : data.model}
+        />
+      )}
+
+      {isTrailer && (
+        <ModelPickerModal
+          isOpen={modalMode === 'trailer-type'}
+          onClose={() => setModalMode(null)}
+          onSelect={(type) => handleUpdate({ trailerType: type }, 'section-model')}
+          options={trailerTypes}
+          title={t('data_trailer_type')}
+          initialValue={data.trailerType}
         />
       )}
 

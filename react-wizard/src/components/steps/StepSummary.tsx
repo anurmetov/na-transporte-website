@@ -8,14 +8,14 @@ export const StepSummary: React.FC = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const isTrailer = data.vehicleType === 'auflieger' || data.vehicleType === 'anhaenger';
-  const hideTuevAndAccident = isTrailer || data.vehicleType === 'lkw';
+  const hideTuevAndAccident = isTrailer || data.vehicleType === 'szm' || data.vehicleType === 'lkw';
 
   const handleSubmit = async () => {
     setLoading(true);
     
     // Construct the payload based on user requirements
     const payload = {
-      vehicle_type: data.vehicleType === 'andere' ? data.otherType : (data.lkwWeight ? `${data.vehicleType} (${data.lkwWeight})` : data.vehicleType),
+      vehicle_type: data.vehicleType === 'andere' ? data.otherType : (data.lkwWeight ? `${data.vehicleType} (${data.lkwWeight})` : (isTrailer && data.trailerType ? `${data.vehicleType} (${data.trailerType})` : data.vehicleType)),
       manufacturer: data.brand || '-',
       model: data.model || '-',
       year: data.year || '-',
@@ -67,7 +67,7 @@ export const StepSummary: React.FC = () => {
         <ul className="space-y-3 mb-6">
           <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
             <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_type')}</span> 
-            <span className="font-medium text-neutral-900 break-words">{data.vehicleType === 'andere' ? data.otherType : (data.lkwWeight ? `${data.vehicleType} (${data.lkwWeight})` : data.vehicleType)}</span>
+            <span className="font-medium text-neutral-900 break-words">{data.vehicleType === 'andere' ? data.otherType : (data.lkwWeight ? `${data.vehicleType} (${data.lkwWeight})` : (isTrailer && data.trailerType ? `${data.vehicleType} (${data.trailerType})` : data.vehicleType))}</span>
           </li>
           {data.vehicleType !== 'andere' && (
             <>
@@ -75,7 +75,7 @@ export const StepSummary: React.FC = () => {
                 <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_brand_label')}</span>
                 <span className="font-medium text-neutral-900 break-words">{data.brand}</span>
               </li>
-              {['pkw', 'lkw', 'szm'].includes(data.vehicleType) && data.model && (
+              {['pkw', 'lkw', 'szm', 'auflieger'].includes(data.vehicleType) && data.model && (
                 <li className="flex flex-col sm:flex-row gap-1 sm:gap-4 border-b border-neutral-50 pb-2 sm:border-0 sm:pb-0">
                   <span className="text-neutral-500 sm:w-1/3 shrink-0 break-words">{t('summary_model')}</span>
                   <span className="font-medium text-neutral-900 break-words">{data.model.replace('(Alle)', `(${t('model_all')})`)}</span>

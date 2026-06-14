@@ -613,6 +613,24 @@ export const wizardDict = {
         "fr": "Veuillez indiquer si le véhicule est sans accident.",
         "ru": "Пожалуйста, укажите, попадал ли автомобиль в ДТП."
     },
+    "data_trailer_type": {
+        "de": "Fahrzeugtyp",
+        "en": "Vehicle Type",
+        "fr": "Type de véhicule",
+        "ru": "Тип транспортного средства"
+    },
+    "data_trailer_type_select": {
+        "de": "Typ auswählen...",
+        "en": "Select type...",
+        "fr": "Sélectionner le type...",
+        "ru": "Выберите тип..."
+    },
+    "err_trailer_type": {
+        "de": "Bitte wählen Sie den Fahrzeugtyp aus.",
+        "en": "Please select the vehicle type.",
+        "fr": "Veuillez sélectionner le type de véhicule.",
+        "ru": "Пожалуйста, выберите тип транспортного средства."
+    },
     "photos_title": {
         "de": "Fotos hinzufügen (Optional)",
         "en": "Add photos (Optional)",

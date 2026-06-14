@@ -4,6 +4,7 @@ export interface FormState {
   vehicleType: string;
   lkwWeight: string; // "über 7.5T" or "unter 7.5T"
   otherType: string;
+  trailerType: string;
   brand: string;
   model: string;
   year: string;
@@ -39,6 +40,7 @@ const initialState: FormState = {
   vehicleType: '',
   lkwWeight: '',
   otherType: '',
+  trailerType: '',
   brand: '',
   model: '',
   year: '',

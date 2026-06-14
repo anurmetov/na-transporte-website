@@ -77,9 +77,11 @@ const generateEmailTemplate = (data) => {
                         <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Kilometer:</td>
                         <td style="padding-bottom: 12px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${mileage || '-'}</td>
                     </tr>
+                    ` : ''}
+                    ${(!isTrailer && !['szm', 'SZM', 'lkw', 'LKW'].includes(vehicle_type)) ? `
                     <tr>
                         <td style="padding-bottom: 24px; color: #5f6366; font-size: 14px;">TÜV/HU:</td>
-                        <td style="padding-bottom: 24px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}</td>
+                        <td style="padding-bottom: 24px; color: #1a1c1a; font-size: 14px; font-weight: 600;">${tuev_available === 'ja' ? (tuev || 'Ja') : (tuev_available === 'nein' ? 'Nein' : '-')}</td>
                     </tr>
                     <tr>
                         <td style="padding-bottom: 12px; color: #5f6366; font-size: 14px;">Unfallfrei:</td>

@@ -76,9 +76,13 @@ app.post('/api/contact', upload.array('photos', 5), (req, res) => {
     if (!isTrailer) {
         messageText += `- Kilometerstand/Betriebsstunden: ${mileage || '-'}\n`;
         messageText += `- Schaltung/Automatik: ${gear_full || '-'}\n`;
-        messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
+        if (!['szm', 'SZM', 'lkw', 'LKW'].includes(vehicle_type)) {
+            messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
+        }
         messageText += `- Schadstoffklasse: ${emission_class || '-'}\n`;
-        messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
+        if (!['szm', 'SZM', 'lkw', 'LKW'].includes(vehicle_type)) {
+            messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : (tuev_available === 'nein' ? 'Nein' : '-')}\n`;
+        }
     }
     messageText += `- Wunschpreis: ${price ? price + ' €' : '-'}\n\n`;
     
@@ -152,8 +156,10 @@ app.post('/api/lead', upload.array('photos', 5), (req, res) => {
         messageText += `- Baujahr: ${year || '-'}\n`;
         if (!isTrailer) {
             messageText += `- Kilometer: ${mileage || '-'}\n`;
-            messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : 'Nein'}\n`;
-            messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
+            if (!['szm', 'SZM', 'lkw', 'LKW'].includes(vehicle_type)) {
+                messageText += `- TÜV/HU: ${tuev_available === 'ja' ? (tuev || 'Ja') : (tuev_available === 'nein' ? 'Nein' : '-')}\n`;
+                messageText += `- Unfallfrei: ${accident_full || '-'}\n`;
+            }
         }
     }
 
