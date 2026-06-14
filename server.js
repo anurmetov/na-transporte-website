@@ -3,9 +3,10 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
-const nodemailer = require('nodemailer');
 const multer = require('multer');
+const { Resend } = require('resend');
 const generateEmailTemplate = require('./emailTemplate');
+const pool = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,17 +24,11 @@ app.use(
   express.static(path.join(__dirname, 'react-wizard/public'))
 );
 
-// Configure Multer for memory storage (for attaching directly to emails)
+// Configure Multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Setup Nodemailer transporter
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
-});
+// Setup Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Simple Basic Auth Middleware
 const basicAuth = (req, res, next) => {
@@ -50,7 +45,7 @@ const basicAuth = (req, res, next) => {
 };
 
 // API Routes
-app.post('/api/contact', upload.array('photos', 5), (req, res) => {
+app.post('/api/contact', upload.array('photos', 5), async (req, res) => {
     const { 
         name, email, phone, 
         vehicle_type, manufacturer, model, description, year, first_registration, 
@@ -64,8 +59,26 @@ app.post('/api/contact', upload.array('photos', 5), (req, res) => {
     }
 
     const vehicle = `${manufacturer || ''} ${model || ''} ${vehicle_type ? `(${vehicle_type})` : ''}`.trim();
-    
     const isTrailer = vehicle_type === 'auflieger' || vehicle_type === 'anhaenger';
+
+    // 1. Save to Database
+    try {
+        await pool.query(`
+            INSERT INTO leads (
+                name, email, phone, vehicle_type, manufacturer, model, 
+                year, first_registration, mileage, gear_full, accident_full, 
+                emission_class, tuev, price, description, other_defects, is_trailer
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            name, email, phone, vehicle_type, manufacturer, model,
+            year, first_registration, mileage, gear_full, accident_full,
+            emission_class, tuev_available === 'ja' ? tuev : (tuev_available === 'nein' ? 'Nein' : null), 
+            price, description, other_defects, isTrailer
+        ]);
+    } catch (dbError) {
+        console.error('Error saving to DB:', dbError);
+        // We continue to send email even if DB fails, or we could return 500
+    }
 
     let messageText = `Fahrzeugdaten:\n`;
     messageText += `- Typ: ${vehicle_type || '-'}\n`;
@@ -86,35 +99,30 @@ app.post('/api/contact', upload.array('photos', 5), (req, res) => {
     }
     messageText += `- Wunschpreis: ${price ? price + ' €' : '-'}\n\n`;
     
-    if (description) {
-        messageText += `\nOptionale Beschreibung / Sonderausstattungen:\n${description}\n`;
-    }
-    
-    if (other_defects) {
-        messageText += `\nWeitere bekannte Mängel / Schäden:\n${other_defects}\n`;
-    }
+    if (description) messageText += `\nOptionale Beschreibung / Sonderausstattungen:\n${description}\n`;
+    if (other_defects) messageText += `\nWeitere bekannte Mängel / Schäden:\n${other_defects}\n`;
 
-    // Send email notification asynchronously
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-        const mailOptions = {
-            from: process.env.SMTP_FROM || process.env.SMTP_USER,
-            to: process.env.SMTP_TO || process.env.SMTP_USER,
-            subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
-            text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`
-        };
+    // 2. Send email via Resend
+    if (process.env.RESEND_API_KEY) {
+        try {
+            const attachments = req.files && req.files.length > 0 
+                ? req.files.map(file => ({
+                    filename: file.originalname,
+                    content: file.buffer
+                })) 
+                : undefined;
 
-        // Process uploaded files for attachments
-        if (req.files && req.files.length > 0) {
-            mailOptions.attachments = req.files.map(file => ({
-                filename: file.originalname,
-                content: file.buffer
-            }));
+            await resend.emails.send({
+                from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+                to: process.env.SMTP_TO || 'onboarding@resend.dev',
+                subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
+                text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`,
+                attachments
+            });
+            console.log('Contact email sent via Resend.');
+        } catch (mailErr) {
+            console.error('Error sending email via Resend:', mailErr);
         }
-
-        transporter.sendMail(mailOptions, (mailErr, info) => {
-            if (mailErr) console.error('Error sending email:', mailErr);
-            else console.log('Email sent:', info.response);
-        });
     }
 
     res.status(201).json({ 
@@ -124,7 +132,7 @@ app.post('/api/contact', upload.array('photos', 5), (req, res) => {
 });
 
 // Production-ready Email Confirmation Endpoint
-app.post('/api/lead', upload.array('photos', 5), (req, res) => {
+app.post('/api/lead', upload.array('photos', 5), async (req, res) => {
     const { 
         name, email, phone, 
         vehicle_type, manufacturer, model, description, year, first_registration, 
@@ -146,13 +154,29 @@ app.post('/api/lead', upload.array('photos', 5), (req, res) => {
     const vehicle = `${manufacturer || ''} ${model || ''} ${vehicle_type ? `(${vehicle_type})` : ''}`.trim();
     const isTrailer = vehicle_type === 'auflieger' || vehicle_type === 'anhaenger';
     
+    // 2. Save to Database
+    try {
+        await pool.query(`
+            INSERT INTO leads (
+                name, email, phone, vehicle_type, manufacturer, model, 
+                year, first_registration, mileage, gear_full, accident_full, 
+                emission_class, tuev, price, description, other_defects, is_trailer
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+            name, email, phone, vehicle_type, manufacturer, model,
+            year, first_registration, mileage, gear_full, accident_full,
+            emission_class, tuev_available === 'ja' ? tuev : (tuev_available === 'nein' ? 'Nein' : null), 
+            price, description, other_defects, isTrailer
+        ]);
+    } catch (dbError) {
+        console.error('Error saving to DB:', dbError);
+    }
+
     let messageText = `FAHRZEUG:\n`;
     messageText += `- Typ: ${vehicle_type || '-'}\n`;
     if (vehicle_type !== 'andere' && manufacturer !== '-') {
         messageText += `- Marke: ${manufacturer || '-'}\n`;
-        if (model && model !== '-') {
-            messageText += `- Modell: ${model}\n`;
-        }
+        if (model && model !== '-') messageText += `- Modell: ${model}\n`;
         messageText += `- Baujahr: ${year || '-'}\n`;
         if (!isTrailer) {
             messageText += `- Kilometer: ${mileage || '-'}\n`;
@@ -163,56 +187,57 @@ app.post('/api/lead', upload.array('photos', 5), (req, res) => {
         }
     }
 
-    // 2. Send Email Confirmation Asynchronously
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-        // Internal Notification
-        const internalMailOptions = {
-            from: process.env.SMTP_FROM || process.env.SMTP_USER,
-            to: process.env.SMTP_TO || process.env.SMTP_USER,
-            subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
-            text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`
-        };
+    // 3. Send Emails via Resend Asynchronously
+    if (process.env.RESEND_API_KEY) {
+        try {
+            const attachments = req.files && req.files.length > 0 
+                ? req.files.map(file => ({
+                    filename: file.originalname,
+                    content: file.buffer
+                })) 
+                : undefined;
 
-        // Process uploaded files for attachments
-        if (req.files && req.files.length > 0) {
-            internalMailOptions.attachments = req.files.map(file => ({
-                filename: file.originalname,
-                content: file.buffer
-            }));
+            // Internal Notification
+            resend.emails.send({
+                from: process.env.SMTP_FROM || 'onboarding@resend.dev',
+                to: process.env.SMTP_TO || 'onboarding@resend.dev',
+                subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
+                text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`,
+                attachments
+            }).catch(e => console.error('Error sending internal resend email:', e));
+
+            // Customer Confirmation Email (Premium HTML)
+            const htmlContent = generateEmailTemplate(req.body);
+            
+            resend.emails.send({
+                from: process.env.SMTP_FROM || 'onboarding@resend.dev', // Must be verified domain
+                to: email,
+                subject: 'Ihre Anfrage bei N&A Transporte ist eingegangen',
+                html: htmlContent
+            }).catch(e => console.error('Error sending customer resend email:', e));
+
+        } catch (mailErr) {
+            console.error('Error in Resend block:', mailErr);
         }
-
-        transporter.sendMail(internalMailOptions, (mailErr) => {
-            if (mailErr) console.error('Error sending internal notification:', mailErr);
-        });
-
-        // Customer Confirmation Email (Premium HTML)
-        const htmlContent = generateEmailTemplate(req.body);
-        
-        const customerMailOptions = {
-            from: `"N&A Transporte" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-            to: email,
-            subject: 'Ihre Anfrage bei N&A Transporte ist eingegangen',
-            html: htmlContent
-        };
-
-        transporter.sendMail(customerMailOptions, (mailErr, info) => {
-            if (mailErr) console.error('Error sending confirmation email to customer:', mailErr);
-            else console.log('Confirmation email sent to customer:', email, info.response);
-        });
     } else {
-        console.warn('SMTP credentials not provided. Email not sent.');
+        console.warn('RESEND_API_KEY not provided. Emails not sent.');
     }
 
-    // 3. Instant Confirmation
+    // 4. Instant Confirmation
     res.status(201).json({ 
         success: true, 
         message: 'Ihre Anfrage wurde erfolgreich gesendet!'
     });
 });
 
-
-app.get('/api/submissions', basicAuth, (req, res) => {
-    res.json([]);
+app.get('/api/submissions', basicAuth, async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM leads ORDER BY created_at DESC');
+        res.json(rows);
+    } catch (error) {
+        console.error('Error fetching submissions:', error);
+        res.status(500).json({ error: 'Failed to fetch submissions' });
+    }
 });
 
 app.get('/admin', basicAuth, (req, res) => {
