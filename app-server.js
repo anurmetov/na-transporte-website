@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const multer = require('multer');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const generateEmailTemplate = require('./emailTemplate');
 const pool = require('./db');
 
@@ -27,8 +27,16 @@ app.use(
 // Configure Multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Setup Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Setup Nodemailer transporter
+const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT || 587,
+    secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+    auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS
+    }
+});
 
 // Simple Basic Auth Middleware
 const basicAuth = (req, res, next) => {
@@ -102,8 +110,8 @@ app.post('/api/contact', upload.array('photos', 5), async (req, res) => {
     if (description) messageText += `\nOptionale Beschreibung / Sonderausstattungen:\n${description}\n`;
     if (other_defects) messageText += `\nWeitere bekannte Mängel / Schäden:\n${other_defects}\n`;
 
-    // 2. Send email via Resend
-    if (process.env.RESEND_API_KEY) {
+    // 2. Send email via Nodemailer
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
         try {
             const attachments = req.files && req.files.length > 0 
                 ? req.files.map(file => ({
@@ -112,16 +120,16 @@ app.post('/api/contact', upload.array('photos', 5), async (req, res) => {
                 })) 
                 : undefined;
 
-            await resend.emails.send({
-                from: process.env.SMTP_FROM || 'onboarding@resend.dev',
-                to: process.env.SMTP_TO || 'onboarding@resend.dev',
+            await transporter.sendMail({
+                from: process.env.SMTP_FROM || process.env.SMTP_USER,
+                to: process.env.SMTP_TO || process.env.SMTP_USER,
                 subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
                 text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`,
                 attachments
             });
-            console.log('Contact email sent via Resend.');
+            console.log('Contact email sent via SMTP.');
         } catch (mailErr) {
-            console.error('Error sending email via Resend:', mailErr);
+            console.error('Error sending email via SMTP:', mailErr);
         }
     }
 
@@ -187,8 +195,8 @@ app.post('/api/lead', upload.array('photos', 5), async (req, res) => {
         }
     }
 
-    // 3. Send Emails via Resend Asynchronously
-    if (process.env.RESEND_API_KEY) {
+    // 3. Send Emails via Nodemailer Asynchronously
+    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
         try {
             const attachments = req.files && req.files.length > 0 
                 ? req.files.map(file => ({
@@ -198,29 +206,29 @@ app.post('/api/lead', upload.array('photos', 5), async (req, res) => {
                 : undefined;
 
             // Internal Notification
-            resend.emails.send({
-                from: process.env.SMTP_FROM || 'onboarding@resend.dev',
-                to: process.env.SMTP_TO || 'onboarding@resend.dev',
+            transporter.sendMail({
+                from: process.env.SMTP_FROM || process.env.SMTP_USER,
+                to: process.env.SMTP_TO || process.env.SMTP_USER,
                 subject: `Neue Anfrage von ${name} - ${vehicle || 'Fahrzeug'}`,
                 text: `Neue Anfrage erhalten:\n\nName: ${name}\nEmail: ${email}\nTelefon: ${phone}\n\n${messageText}`,
                 attachments
-            }).catch(e => console.error('Error sending internal resend email:', e));
+            }).catch(e => console.error('Error sending internal SMTP email:', e));
 
             // Customer Confirmation Email (Premium HTML)
             const htmlContent = generateEmailTemplate(req.body);
             
-            resend.emails.send({
-                from: process.env.SMTP_FROM || 'onboarding@resend.dev', // Must be verified domain
+            transporter.sendMail({
+                from: process.env.SMTP_FROM || process.env.SMTP_USER,
                 to: email,
                 subject: 'Ihre Anfrage bei N&A Transporte ist eingegangen',
                 html: htmlContent
-            }).catch(e => console.error('Error sending customer resend email:', e));
+            }).catch(e => console.error('Error sending customer SMTP email:', e));
 
         } catch (mailErr) {
-            console.error('Error in Resend block:', mailErr);
+            console.error('Error in SMTP block:', mailErr);
         }
     } else {
-        console.warn('RESEND_API_KEY not provided. Emails not sent.');
+        console.warn('SMTP credentials not provided. Emails not sent.');
     }
 
     // 4. Instant Confirmation
