@@ -114,7 +114,7 @@ const generateEmailTemplate = (data) => {
             <p style="color: #5f6366; font-size: 12px; margin: 0; line-height: 1.5;">
                 N&A Transporte GmbH<br>
                 Senefelderstr. 5, 77933 Lahr<br>
-                <a href="https://na-transporte.de" style="color: #ab3500; text-decoration: none;">www.na-transporte.de</a>
+                <a href="https://natransporte.de" style="color: #ab3500; text-decoration: none;">www.na-transporte.de</a>
             </p>
         </div>
     </div>
