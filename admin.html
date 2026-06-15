@@ -68,7 +68,11 @@
                     return;
                 }
 
-                tbody.innerHTML = data.map(sub => `
+                tbody.innerHTML = data.map(sub => {
+                    const vehicleStr = [sub.manufacturer, sub.model, sub.vehicle_type ? `(${sub.vehicle_type})` : ''].filter(Boolean).join(' ');
+                    const messageStr = [sub.description, sub.other_defects].filter(Boolean).join(' | ');
+                    
+                    return `
                     <tr class="hover:bg-neutral-50 transition-colors">
                         <td class="px-8 py-5 whitespace-nowrap text-sm text-neutral-500">${new Date(sub.created_at).toLocaleString('de-DE')}</td>
                         <td class="px-8 py-5 whitespace-nowrap text-sm font-semibold text-neutral-900">${escapeHtml(sub.name)}</td>
@@ -76,10 +80,11 @@
                             <div class="text-neutral-900 font-medium">${escapeHtml(sub.email)}</div>
                             <div class="mt-1">${escapeHtml(sub.phone)}</div>
                         </td>
-                        <td class="px-8 py-5 whitespace-nowrap text-sm text-neutral-600">${escapeHtml(sub.vehicle || '-')}</td>
-                        <td class="px-8 py-5 text-sm text-neutral-600 max-w-xs truncate" title="${escapeHtml(sub.message || '')}">${escapeHtml(sub.message || '-')}</td>
+                        <td class="px-8 py-5 whitespace-nowrap text-sm text-neutral-600">${escapeHtml(vehicleStr || '-')}</td>
+                        <td class="px-8 py-5 text-sm text-neutral-600 max-w-xs truncate" title="${escapeHtml(messageStr || '')}">${escapeHtml(messageStr || '-')}</td>
                     </tr>
-                `).join('');
+                    `;
+                }).join('');
             } catch (err) {
                 tbody.innerHTML = '<tr><td colspan="5" class="px-8 py-8 text-center text-sm text-red-500 font-medium">Fehler beim Laden der Daten.</td></tr>';
                 console.error(err);
