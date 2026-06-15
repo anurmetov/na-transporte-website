@@ -120,58 +120,7 @@ const carModels: Record<string, ModelGroup[]> = {
   ]
 };
 
-const truckModels: Record<string, ModelGroup[]> = {
-  'Mercedes-Benz': [
-    { group: 'Actros', options: ['Actros (Alle)', 'Actros 1845', 'Actros 1848', 'Actros 1851'] },
-    { group: 'Arocs', options: ['Arocs (Alle)', 'Arocs 3240', 'Arocs 4145'] },
-    { group: 'Atego', options: ['Atego (Alle)', 'Atego 815', 'Atego 1222'] },
-    { group: 'Transporter', options: ['Sprinter', 'Vito'] },
-    { group: 'Andere Modelle', options: ['Econic', 'Unimog', 'Zetros'] },
-    { group: 'Andere', options: ['Andere'] }
-  ],
-  'MAN': [
-    { group: 'TGX', options: ['TGX (Alle)', 'TGX 18.470', 'TGX 18.510', 'TGX 26.470'] },
-    { group: 'TGS', options: ['TGS (Alle)', 'TGS 18.400', 'TGS 26.440'] },
-    { group: 'Andere Modelle', options: ['TGM', 'TGL', 'TGE'] },
-    { group: 'Andere', options: ['Andere'] }
-  ],
-  'Volvo': [
-    { group: 'FH', options: ['FH (Alle)', 'FH 460', 'FH 500', 'FH 540'] },
-    { group: 'FM', options: ['FM (Alle)', 'FM 420', 'FM 460'] },
-    { group: 'Andere Modelle', options: ['FH16', 'FMX', 'FE', 'FL'] },
-    { group: 'Andere', options: ['Andere'] }
-  ],
-  'Scania': [
-    { group: 'R-Serie', options: ['R-Serie (Alle)', 'R 450', 'R 500', 'R 520'] },
-    { group: 'S-Serie', options: ['S-Serie (Alle)', 'S 500', 'S 540', 'S 580'] },
-    { group: 'Andere Modelle', options: ['G-Serie', 'P-Serie', 'L-Serie'] },
-    { group: 'Andere', options: ['Andere'] }
-  ],
-  'DAF': [
-    { group: 'XF', options: ['XF (Alle)', 'XF 480', 'XF 530'] },
-    { group: 'XG / XG+', options: ['XG (Alle)', 'XG 480', 'XG+ 530'] },
-    { group: 'Andere Modelle', options: ['CF', 'LF'] },
-    { group: 'Andere', options: ['Andere'] }
-  ],
-  'Iveco': [
-    { group: 'S-Way', options: ['S-Way (Alle)', 'S-Way 460', 'S-Way 510'] },
-    { group: 'Daily', options: ['Daily (Alle)', 'Daily 35S14', 'Daily 35C15'] },
-    { group: 'Andere Modelle', options: ['X-Way', 'T-Way', 'Eurocargo', 'Stralis', 'Trakker'] },
-    { group: 'Andere', options: ['Andere'] }
-  ],
-  'Renault': [
-    { group: 'T-Baureihe', options: ['T-Baureihe (Alle)', 'T 480', 'T 520', 'T High'] },
-    { group: 'Transporter', options: ['Master', 'Trafic'] },
-    { group: 'Andere Modelle', options: ['C-Baureihe', 'K-Baureihe', 'D-Baureihe'] },
-    { group: 'Andere', options: ['Andere'] }
-  ],
-  'Ford': [
-    { group: 'F-Max', options: ['F-Max (Alle)', 'F-Max 500'] },
-    { group: 'Transporter', options: ['Transit', 'Transit Custom'] },
-    { group: 'Andere Modelle', options: ['Cargo'] },
-    { group: 'Andere', options: ['Andere'] }
-  ]
-};
+
 
 export const StepData: React.FC = () => {
   const { data, updateData, nextStep } = useFormStore();
@@ -187,8 +136,7 @@ export const StepData: React.FC = () => {
   const [modalMode, setModalMode] = useState<'year' | 'tuev' | 'model' | 'trailer-type' | null>(null);
   
   const needsModel = ['pkw', 'lkw', 'szm', 'auflieger'].includes(data.vehicleType);
-  const availableModelGroups = data.vehicleType === 'pkw' ? carModels[data.brand] : 
-                               (data.vehicleType === 'lkw' || data.vehicleType === 'szm' ? undefined : truckModels[data.brand]);
+  const availableModelGroups = data.vehicleType === 'pkw' ? carModels[data.brand] : undefined;
 
   // Helper to check if a model exists in the groups
   const isModelInGroups = (model: string, groups?: ModelGroup[]) => {
