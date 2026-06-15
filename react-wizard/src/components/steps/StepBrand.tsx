@@ -40,7 +40,7 @@ const customLogos: Record<string, string> = {
 export const StepBrand: React.FC = () => {
   const { data, updateData, nextStep } = useFormStore();
   const { t } = useTranslation();
-  
+
   let currentBrands = truckBrands;
   if (data.vehicleType === 'pkw') {
     currentBrands = carBrands;
@@ -76,8 +76,8 @@ export const StepBrand: React.FC = () => {
             key={brand}
             label={brand === 'Andere' ? t('brand_other') : brand}
             icon={brand !== 'Andere' && (customLogos[brand] || brandDomains[brand]) ? (
-              <img 
-                src={customLogos[brand] || `https://logo.clearbit.com/${brandDomains[brand]}`} 
+              <img
+                src={customLogos[brand] || `https://logo.clearbit.com/${brandDomains[brand]}`}
                 alt={`${brand} Logo`}
                 className="w-12 h-12 object-contain"
                 onError={(e) => {
@@ -93,7 +93,7 @@ export const StepBrand: React.FC = () => {
           />
         ))}
       </div>
-      
+
       {data.brand === 'Andere' && (
         <form id="customBrand-form" onSubmit={handleCustomSubmit} className="mt-10 max-w-md mx-auto animate-in fade-in slide-in-from-top-4 w-full px-2">
           <label htmlFor="customBrand" className="block text-sm font-semibold text-neutral-900 mb-3">

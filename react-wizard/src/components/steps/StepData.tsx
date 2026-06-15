@@ -187,7 +187,8 @@ export const StepData: React.FC = () => {
   const [modalMode, setModalMode] = useState<'year' | 'tuev' | 'model' | 'trailer-type' | null>(null);
   
   const needsModel = ['pkw', 'lkw', 'szm', 'auflieger'].includes(data.vehicleType);
-  const availableModelGroups = data.vehicleType === 'pkw' ? carModels[data.brand] : truckModels[data.brand];
+  const availableModelGroups = data.vehicleType === 'pkw' ? carModels[data.brand] : 
+                               (data.vehicleType === 'lkw' || data.vehicleType === 'szm' ? undefined : truckModels[data.brand]);
 
   // Helper to check if a model exists in the groups
   const isModelInGroups = (model: string, groups?: ModelGroup[]) => {
